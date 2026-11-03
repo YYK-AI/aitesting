@@ -267,3 +267,12 @@ body.photo-mode .pix-sub{color:var(--carolina-3)}
 .candle.num{width:auto;height:auto;background:none;box-shadow:none;font-family:"Playfair",serif;font-weight:700;font-size:clamp(40px,11vw,56px);line-height:1}
 .candle.num span{display:block;color:#fff;-webkit-text-stroke:2px var(--carolina);text-shadow:0 3px 0 rgba(0,0,0,.2)}
 }
+
+/* bigger, bolder bottom strip on laptops / desktops */
+@media (min-width:900px){
+  .ticker{padding:14px 0 calc(14px + env(safe-area-inset-bottom));border-top-width:3px}
+  .ticker-track{font-size:clamp(17px,1.35vw,24px);letter-spacing:.14em}
+  .tk-suit{padding:0 22px}
+  .tk-chr{padding:5px 18px;margin:0 10px}
+  #skip{bottom:calc(env(safe-area-inset-bottom) + 80px)}
+}

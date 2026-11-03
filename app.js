@@ -30,7 +30,7 @@ const CONFIG = {
   // Robert Bushyhead in the WCU Cherokee lesson "Happy Birthday" (Lesson 6B):
   // ᎤᎵᎮᎵᏍᏗ ᏣᏕᏘᏯ = Ulihelisdi tsadetiya = "Happy birthday to you"
   cherokee: "ᎤᎵᎮᎵᏍᏗ ᏣᏕᏘᏯ",
-  cherokeeLatin: "happy birthday",
+  cherokeeLatin: "Ulihelisdi tsadetiya",
   ticker: ["HAPPY 21ST BIRTHDAY PAYTYN", "MAY THE ODDS BE EVER IN YOUR FAVOR"],
 };
 
