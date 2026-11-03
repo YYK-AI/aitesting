@@ -12,7 +12,7 @@ in your favor", a mockingjay pin and "— from Yusuf". Replay + photo wall at th
 ## Put it online (GitHub Pages)
 1. Repo **Settings → General → Danger Zone → Change visibility → Public** (Pages on private repos needs a paid plan).
 2. **Settings → Pages → Build and deployment → Deploy from a branch** → pick this branch, folder `/ (root)` → Save.
-3. After a minute or two it's live at **https://yyk-ai.github.io/aitesting/**, the URL inside `qr-code.png`.
+3. After a minute or two it's live at **https://yyk-ai.github.io/paytynbd/**, the URL inside `qr-code.png`.
 
 ## Tweaks
 - Songs, volumes, photos, chapter titles, the final message and ticker text: the `CONFIG` block at the top of `app.js`.
