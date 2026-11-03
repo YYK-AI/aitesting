@@ -7,7 +7,8 @@ const CONFIG = {
   bdayVideo: "media/birthday.mp4",
   // Zac Brown Band — Chicken Fried, layered under the birthday song from Chapter III on
   zbbSong: "media/chicken-fried.mp3",
-  mix: { bday: 0.8, bdayWithZbb: 0.55, zbb: 0.5 }, // volumes (0–1)
+  zbbStart: 50.8, // seconds into chicken-fried.mp3: "...grown in Southern ground, and a little bit of chicken fried"
+  mix: { bday: 0.8, bdayWithZbb: 0.1, zbb: 0.95, fade: 3.5 }, // volumes (0–1) and crossfade length (s)
   // the pics, in order — her solo ones are sprinkled between the ones together
   photos: [
     { src: "img/canyon.jpg",        sticker: "🏜️" },
@@ -83,10 +84,10 @@ const Mix = {
     if (this.onZbb) return;
     this.onZbb = true;
     if (!this.ctx) this.song.volume = 0;
-    this.song.currentTime = 0;
+    this.song.currentTime = CONFIG.zbbStart;
     this.song.play().catch(() => {});
-    this.fade("zbb", CONFIG.mix.zbb, 2.5);
-    this.fade("bday", CONFIG.mix.bdayWithZbb, 2.5);
+    this.fade("zbb", CONFIG.mix.zbb, CONFIG.mix.fade);
+    this.fade("bday", CONFIG.mix.bdayWithZbb, CONFIG.mix.fade);
   },
   restart() {
     this.onZbb = false;
@@ -272,7 +273,7 @@ function buildShow() {
 
   // --- CHAPTER III: Zac Brown Band
   tl.addLabel("zbb", t);
-  tl.call(() => Mix.toZbb(), null, t - 1.5);
+  tl.call(() => Mix.toZbb(), null, t - 2.5);
   tl.to(".beam", { opacity: 1, duration: 0.8 }, t - 0.6);
   tl.to(".beam.b1", { rotation: 10, duration: 2.2, yoyo: true, repeat: 3, ease: "sine.inOut" }, t - 0.6);
   tl.to(".beam.b2", { rotation: -10, duration: 2.2, yoyo: true, repeat: 3, ease: "sine.inOut" }, t - 0.6);
