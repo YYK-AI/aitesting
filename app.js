@@ -6,9 +6,10 @@ const CONFIG = {
   // "Epic Happy Birthday Song — Peyton" (the video you picked)
   bdayVideo: "huvuvjL1fYs",
   bdayStart: 0,
-  // Zac Brown Band — "Chicken Fried" (official video). Start near the chorus.
+  // Zac Brown Band — "Chicken Fried" (official video, 4:33). The singing starts at 1:23
+  // ("You know I like my chicken fried..."); everything before that is a spoken intro.
   zbbVideo: "e4ujS1er1r0",
-  zbbStart: 52,
+  zbbStart: 82,
   actOne: { num: "ACT I", title: "The Wild Side" },
   actTwo: { num: "ACT II", title: "The Squad" },
   actThree: { num: "ACT III", title: "Zac Brown Band" },
@@ -26,6 +27,9 @@ const CONFIG = {
     { src: "img/stameys.jpg",       cap: "BBQ & besties",            sticker: "🍔" },
   ],
   concertCaption: "Zac Brown Band night 🤠🇺🇸",
+  // Photos shown on the Zac Brown Band ticket (they cross-fade if there's more than one)
+  concertPhotos: ["img/zbb-concert.jpg"],
+  signoff: "— from Yusuf 💛",
   creditsLine: "This is where all my AI credits go to",
   tickerText: "★ HAPPY 20TH BIRTHDAY PAYTYN ★ CHEROKEE'S FINEST ♠ ALL IN ON PAYTYN ♥ EST. NOV 3 2006 ♣ LEVEL 20 UNLOCKED ♦ ",
 };
@@ -344,7 +348,10 @@ function rainChips(n = 26) {
 }
 
 /* ------------------------------------------------------------------ BUILD PHOTOS */
-const allPhotos = [...CONFIG.photosActOne, ...CONFIG.photosActTwo, { src: "img/zbb-concert.jpg", cap: CONFIG.concertCaption, sticker: "🤠" }];
+const allPhotos = [...CONFIG.photosActOne, ...CONFIG.photosActTwo, ...CONFIG.concertPhotos.map((src) => ({ src, cap: CONFIG.concertCaption, sticker: "🤠" }))];
+$(".t-photo").innerHTML = CONFIG.concertPhotos.map((src) => `<img src="${src}" alt="">`).join("");
+const concertImgs = [...document.querySelectorAll(".t-photo img")];
+$("#signoff").textContent = CONFIG.signoff;
 function makePolaroid(p) {
   const el = document.createElement("figure");
   el.className = "polaroid" + (p.tall ? " tall" : "");
@@ -435,8 +442,14 @@ function buildShow() {
   tl.to("#screen", { opacity: 0.35, duration: 1 }, t);
   tl.fromTo("#concert", { opacity: 0, scale: 0.5, rotation: -8 }, { opacity: 1, scale: 1, rotation: -2, duration: 1, ease: "back.out(1.6)" }, t);
   tl.call(() => bigBurst(flagColors), null, t + 0.6);
-  tl.to("#concert", { rotation: 2, duration: 1.5, yoyo: true, repeat: 3, ease: "sine.inOut" }, t + 1);
-  t += 8;
+  const zbbLen = Math.max(8, 1.6 + concertImgs.length * 2.8);
+  tl.to("#concert", { rotation: 2, duration: 1.5, yoyo: true, repeat: Math.round(zbbLen / 1.5) - 2, ease: "sine.inOut" }, t + 1);
+  concertImgs.forEach((img, i) => {
+    if (i === 0) return;
+    tl.fromTo(img, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 0.7 }, t + 0.6 + i * 2.8);
+    tl.call(() => pop({ particleCount: 30, spread: 70, origin: { x: 0.5, y: 0.45 }, colors: flagColors }), null, t + 0.8 + i * 2.8);
+  });
+  t += zbbLen;
   tl.to("#concert", { opacity: 0, scale: 0.6, y: -60, duration: 0.6, ease: "power2.in" }, t - 0.6);
   tl.to(".beam", { opacity: 0.35, duration: 1 }, t);
 
@@ -469,7 +482,7 @@ function showCredits() {
   gsap.to("#signoff", { opacity: 1, duration: 0.8, delay: 1.4 });
   gsap.to(".end-btns", { opacity: 1, pointerEvents: "auto", duration: 0.6, delay: 2.2 });
   rainChips();
-  VO.play("credits", "Happy twentieth birthday, Paytyn! " + CONFIG.creditsLine.replace("AI", "A.I."));
+  VO.play("credits", "Happy twentieth birthday, Paytyn! From Yusuf. And yes... " + CONFIG.creditsLine.replace("AI", "A.I."));
 }
 
 function speak(text) {
@@ -489,6 +502,8 @@ let started = false;
 $("#startBtn").addEventListener("click", () => {
   if (started) return;
   started = true;
+  hideRotate();
+  goBigScreen();
   Music.play();
   Music.check();
   VO.unlock();
@@ -551,3 +566,27 @@ $("#theatre").addEventListener("pointerdown", (e) => {
   $("#wallClose").onclick = () => { $("#wall").hidden = true; };
   $("#lightbox").onclick = () => { $("#lightbox").hidden = true; };
 })();
+
+/* ------------------------------------------------------------------ "TURN YOUR PHONE" PROMPT */
+const portraitMQ = matchMedia("(orientation: portrait)");
+const isPhone = matchMedia("(pointer: coarse)").matches && Math.min(screen.width, screen.height) < 600;
+let rotateDismissed = false;
+function hideRotate() { gsap.to("#rotate", { autoAlpha: 0, duration: 0.4 }); }
+function updateRotate() {
+  if (started || rotateDismissed || !isPhone) return hideRotate();
+  if (portraitMQ.matches) gsap.to("#rotate", { autoAlpha: 1, duration: 0.3 });
+  else hideRotate();
+}
+portraitMQ.addEventListener ? portraitMQ.addEventListener("change", updateRotate) : portraitMQ.addListener(updateRotate);
+$("#rotateSkip").addEventListener("click", () => { rotateDismissed = true; hideRotate(); });
+gsap.set("#rotate", { autoAlpha: 0 });
+updateRotate();
+
+// Android: go fullscreen and hold landscape once she taps (iPhones ignore this, that's fine)
+function goBigScreen() {
+  try {
+    const el = document.documentElement;
+    if (!isPhone || portraitMQ.matches || !el.requestFullscreen) return;
+    el.requestFullscreen({ navigationUI: "hide" }).then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock("landscape").catch(() => {})).catch(() => {});
+  } catch (e) {}
+}
