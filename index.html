@@ -4,34 +4,46 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Happy 20th, Paytyn! 🎂</title>
-<meta name="description" content="Tap the chip. A little birthday show for Paytyn, live from Cherokee, NC.">
+<meta name="description" content="A little birthday show for Paytyn, live from Cherokee, NC. Volume up!">
 <meta property="og:title" content="Happy 20th Birthday, Paytyn! 🎂">
-<meta property="og:description" content="Tap the chip to deal in.">
+<meta property="og:description" content="Volume up, then tap the chip.">
 <meta property="og:image" content="img/raft-paddles.jpg">
-<meta name="theme-color" content="#120b2e">
+<meta name="theme-color" content="#5f98c6">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- ============ PIXEL CHEROKEE (the world — later the theatre backdrop) ============ -->
-<div id="world"><canvas id="pix" aria-hidden="true"></canvas></div>
+<!-- ============ CHEROKEE (the world — later the theatre backdrop) ============ -->
+<div id="world" aria-hidden="true">
+  <canvas id="sky"></canvas>
+  <div class="clouds"><i style="--y:9%;--w:38vmin;--d:120s;--o:-.2"></i><i style="--y:18%;--w:26vmin;--d:95s;--o:-.65"></i><i style="--y:5%;--w:20vmin;--d:140s;--o:-.45"></i><i style="--y:25%;--w:30vmin;--d:110s;--o:-.9"></i></div>
+  <div class="batsignal"><svg viewBox="0 0 100 60"><path d="M50 20 L47 12 L45 19 C40 14 31 12 22 14 C27 18 28 23 24 27 C17 24 9 25 2 30 C11 31 17 36 19 44 C25 39 33 39 39 43 L44 37 L50 42 L56 37 L61 43 C67 39 75 39 81 44 C83 36 89 31 98 30 C91 25 83 24 76 27 C72 23 73 18 78 14 C69 12 60 14 55 19 L53 12 Z"/></svg></div>
+  <canvas id="far"></canvas>
+  <div class="mist m1"></div>
+  <canvas id="mid"></canvas>
+  <canvas id="fx"></canvas>
+  <div class="mist m2"></div>
+  <canvas id="fore"></canvas>
+  <div id="night"><div class="stars"></div></div>
+  <canvas id="fx2"></canvas>
+</div>
 
 <!-- ============ THEATRE ============ -->
 <main id="theatre" aria-label="The Paytyn Show">
   <div class="balloons" aria-hidden="true">
-    <i style="--x:8%;--d:13s;--h:340"></i><i style="--x:22%;--d:16s;--h:45"></i>
-    <i style="--x:78%;--d:14s;--h:200"></i><i style="--x:90%;--d:17s;--h:300"></i>
-    <i style="--x:64%;--d:19s;--h:50"></i>
+    <i style="--x:8%;--d:13s;--c:#7bafd4"></i><i style="--x:22%;--d:16s;--c:#ffffff"></i>
+    <i style="--x:78%;--d:14s;--c:#13294b"></i><i style="--x:90%;--d:17s;--c:#a7cbe6"></i>
+    <i style="--x:64%;--d:19s;--c:#f3d27a"></i>
   </div>
 
   <div class="beam b1"></div><div class="beam b2"></div>
 
   <div id="screen">
-    <div class="screen-fallback"><span>🎂</span><b>HAPPY BIRTHDAY</b><b>PAYTYN</b></div>
+    <div class="screen-fallback"><span>🎂</span><b>Happy Birthday</b><b>Paytyn</b></div>
     <div id="ytbox"><div id="yt"></div></div>
   </div>
-  <div id="nowshowing">★ NOW SHOWING ★<br><b>Happy Birthday, Paytyn</b></div>
+  <div id="nowshowing">NOW SHOWING<br><b>Happy Birthday, Paytyn</b></div>
 
   <div id="photos"></div>
 
@@ -39,27 +51,26 @@
 
   <div id="concert">
     <div class="ticket">
-      <div class="t-photo"><img src="img/zbb-concert.jpg" alt="The crew at the Zac Brown Band concert"></div>
+      <div class="t-photo"></div>
       <div class="t-info">
         <small>ADMIT ONE · BIRTHDAY GIRL</small>
         <b>ZAC BROWN BAND</b>
         <span>SEC 225 · ROW ∞ · SEAT 20</span>
       </div>
-      <div class="t-stub">🎟️<span>NO. 1103</span></div>
+      <div class="t-stub"><span>NO. 1103</span><svg class="mj" viewBox="0 0 100 100" aria-label="mockingjay pin"><use href="#mockingjay"/></svg></div>
     </div>
     <div class="nowplaying">♪ now playing: <b>Chicken Fried</b> — Zac Brown Band</div>
   </div>
 
   <div id="finale">
     <div class="hb">
-      <div class="hb-1">Happy</div>
-      <div class="hb-2">Birthday</div>
+      <div class="hb-1">Happy Birthday</div>
       <div class="hb-name">Paytyn</div>
     </div>
     <button id="cake" aria-label="Blow out the candles">
       <div class="candles">
-        <div class="candle c2"><i class="flame"></i><span>2</span></div>
-        <div class="candle c0"><i class="flame"></i><span>0</span></div>
+        <div class="candle"><i class="flame"></i><span>2</span></div>
+        <div class="candle"><i class="flame"></i><span>0</span></div>
       </div>
       <div class="tier top"></div>
       <div class="tier bottom"></div>
@@ -67,7 +78,8 @@
     </button>
     <p class="wish" id="wish">tap the candles &amp; make a wish ✨</p>
     <p id="credits">This is where all my AI credits go to <span>💸</span></p>
-    <p id="signoff">— from Yusuf 💛</p>
+    <p id="odds">may the odds be ever in your favor</p>
+    <p id="signoff"><svg class="mj" viewBox="0 0 100 100"><use href="#mockingjay"/></svg><span>— from Yusuf 💙</span></p>
     <div class="end-btns">
       <button id="replay">↻ Replay</button>
       <button id="wallBtn">📸 All the pics</button>
@@ -81,7 +93,7 @@
     <div class="valance"></div>
     <div class="marquee" id="marquee">
       <span>The Paytyn Show</span>
-      <small>LIVE FROM CHEROKEE, N.C.</small>
+      <small>LIVE AT THE MOUNTAINSIDE THEATRE · CHEROKEE, N.C.</small>
     </div>
     <div class="floor"></div>
     <div class="ticker"><div class="ticker-track"></div></div>
@@ -91,32 +103,21 @@
   <button id="soundPill">🔊 tap for music</button>
 </main>
 
-<!-- ============ PIXEL CHEROKEE INTRO ============ -->
+<!-- ============ INTRO ============ -->
 <section id="intro">
   <div class="intro-ui">
-    <div class="road-sign">
-      <small>WELCOME TO</small>
-      <b>CHEROKEE</b>
-      <small>GREAT SMOKY MOUNTAINS · N.C.</small>
+    <div class="intro-top">
+      <p class="eyebrow">Welcome to Cherokee, North Carolina</p>
+      <h1 class="title">Paytyn</h1>
+      <p class="pix-sub" id="pixSub">turns twenty · est. Nov 3, 2006</p>
     </div>
-    <h1 class="pix-title"><span>PAYTYN'S</span><span class="lvl">LEVEL 20</span></h1>
-    <p class="pix-sub" id="pixSub">EST. NOV 3, 2006</p>
-    <button id="startBtn" class="chip" style="--c:#d62839" aria-label="Start the show">
-      <span class="chip-face">20</span>
-    </button>
-    <p class="tap" id="tapText">TAP THE CHIP TO DEAL IN</p>
-    <p class="hint">🔊 sound on</p>
+    <div class="intro-bottom">
+      <p class="volume"><span class="spk">🔊<i></i><i></i></span> Turn your volume up</p>
+      <button id="startBtn" class="chip" aria-label="Start the show"><span class="chip-face">20</span></button>
+      <p class="tap" id="tapText">tap the chip to start</p>
+    </div>
   </div>
 </section>
-
-<!-- ============ TURN YOUR PHONE ============ -->
-<div id="rotate" role="dialog" aria-label="Turn your phone sideways">
-  <div class="phone"><span>🎂</span></div>
-  <p class="r-title">Hey Paytyn!</p>
-  <p class="r-text">Turn your phone sideways<br>for the full show 🎬</p>
-  <p class="r-small">(if it won't flip, turn off rotation lock)</p>
-  <button id="rotateSkip">or keep it vertical →</button>
-</div>
 
 <!-- ============ PHOTO WALL ============ -->
 <div id="wall" hidden>
@@ -126,9 +127,18 @@
 </div>
 <div id="lightbox" hidden><img alt=""><p></p></div>
 
+<!-- mockingjay pin, used in a couple of places -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="mockingjay" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="6"/>
+    <path fill="currentColor" d="M14 44 C26 38 38 42 47 52 L50 46 L53 52 C62 42 74 38 86 44 C76 46 67 52 61 60 L68 76 L56 68 L50 80 L44 68 L32 76 L39 60 C33 52 24 46 14 44 Z"/>
+    <path stroke="currentColor" stroke-width="3" d="M30 44 L72 44"/>
+  </symbol>
+</svg>
+
 <script src="vendor/gsap.min.js"></script>
 <script src="vendor/confetti.browser.js"></script>
-<script src="pixel.js"></script>
+<script src="scene.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

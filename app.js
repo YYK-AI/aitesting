@@ -29,9 +29,9 @@ const CONFIG = {
   concertCaption: "Zac Brown Band night 🤠🇺🇸",
   // Photos shown on the Zac Brown Band ticket (they cross-fade if there's more than one)
   concertPhotos: ["img/zbb-concert.jpg"],
-  signoff: "— from Yusuf 💛",
+  signoff: "— from Yusuf 💙",
   creditsLine: "This is where all my AI credits go to",
-  tickerText: "★ HAPPY 20TH BIRTHDAY PAYTYN ★ CHEROKEE'S FINEST ♠ ALL IN ON PAYTYN ♥ EST. NOV 3 2006 ♣ LEVEL 20 UNLOCKED ♦ ",
+  tickerText: "HAPPY 20TH BIRTHDAY PAYTYN  ★  LIVE FROM THE GREAT SMOKY MOUNTAINS  ★  MAY THE ODDS BE EVER IN YOUR FAVOR  ★  ALL IN ON PAYTYN ♠  ★  EST. NOV 3, 2006  ★  GOTHAM'S FINEST LEGO ENGINEER  ★  ",
 };
 
 const $ = (s) => document.querySelector(s);
@@ -135,13 +135,13 @@ VO.init();
 /* ------------------------------------------------------------------ CONFETTI HELPERS */
 const pop = (opts) => { try { confetti(Object.assign({ disableForReducedMotion: true, zIndex: 90 }, opts)); } catch (e) {} };
 const flagColors = ["#b22234", "#ffffff", "#3c3b6e"];
-const partyColors = ["#ffd36b", "#ff7eb6", "#7fd3ff", "#b9ffcf", "#d62839"];
+const partyColors = ["#7bafd4", "#ffffff", "#13294b", "#a7cbe6", "#f3d27a"];
 function bigBurst(colors = partyColors) {
   pop({ particleCount: 120, spread: 100, startVelocity: 45, origin: { x: 0.5, y: 0.6 }, colors });
   setTimeout(() => { pop({ particleCount: 70, angle: 60, spread: 70, origin: { x: 0, y: 0.8 }, colors }); pop({ particleCount: 70, angle: 120, spread: 70, origin: { x: 1, y: 0.8 }, colors }); }, 250);
 }
 function rainChips(n = 26) {
-  const colors = ["#d62839", "#1d4ed8", "#0f8a4b", "#111", "#7c3aed"];
+  const colors = ["#13294b", "#7bafd4", "#1d3d6b", "#a7cbe6", "#0b1a33"];
   for (let i = 0; i < n; i++) {
     const el = document.createElement("div");
     el.className = "chip rain-chip";
@@ -210,10 +210,10 @@ function buildShow() {
   // --- INTRO: the chip gets dealt...
   tl.to("#startBtn", { scale: 1.35, rotation: 720, duration: 0.9, ease: "power2.out" }, 0);
   tl.to("#startBtn", { y: -innerHeight, opacity: 0, duration: 0.6, ease: "power2.in" }, 0.9);
-  tl.call(() => { $("#pixSub").textContent = "♠ CHEROKEE'S FINEST ♥"; $("#tapText").textContent = "DEALING YOU IN..."; }, null, 0.05);
-  tl.call(() => pop({ particleCount: 90, spread: 90, origin: { x: 0.5, y: 0.65 }, colors: ["#d62839", "#ffffff", "#ffd36b", "#1d4ed8"] }), null, 0.4);
-  tl.to(".road-sign", { y: -14, duration: 0.5, yoyo: true, repeat: 1, ease: "sine.inOut" }, 0.8);
-  tl.to(".intro-ui", { opacity: 0, y: -30, duration: 0.7 }, 2);
+  tl.call(() => { $("#tapText").textContent = "here we go…"; }, null, 0.05);
+  tl.call(() => pop({ particleCount: 90, spread: 90, origin: { x: 0.5, y: 0.65 }, colors: partyColors }), null, 0.4);
+  tl.to(".intro-bottom", { opacity: 0, y: 30, duration: 0.6 }, 1.3);
+  tl.to(".intro-top", { opacity: 0, y: -30, duration: 0.7 }, 1.9);
   tl.set("#intro", { autoAlpha: 0 }, 2.7);
 
   // ...then the camera pulls back and Cherokee becomes the backdrop of the theatre
@@ -274,6 +274,9 @@ function buildShow() {
   tl.to(".marquee", { autoAlpha: 0, duration: 0.5 }, t);
   tl.to("#skip", { opacity: 0, pointerEvents: "none", duration: 0.3 }, t);
   tl.to("#finale", { autoAlpha: 1, duration: 0.6 }, t);
+  tl.to(Scene.state, { night: 1, duration: 3, ease: "power1.inOut" }, t);
+  tl.to("#night", { opacity: 1, duration: 3, ease: "power1.inOut" }, t);
+  tl.to(".batsignal", { opacity: 0.6, duration: 2.5 }, t + 2.2);
   tl.from(".hb-1", { y: -80, opacity: 0, duration: 0.7, ease: "bounce.out" }, t + 0.1);
   tl.from(".hb-2", { y: -80, opacity: 0, duration: 0.7, ease: "bounce.out" }, t + 0.4);
   tl.from(".hb-name .l", { scale: 0, rotation: () => rand(-90, 90), opacity: 0, stagger: 0.09, duration: 0.6, ease: "back.out(3)" }, t + 0.8);
@@ -294,7 +297,8 @@ function showCredits() {
   $("#credits").firstChild.textContent = CONFIG.creditsLine + " ";
   gsap.fromTo("#credits", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8 });
   gsap.to("#credits span", { rotation: 360, repeat: -1, duration: 1.6, ease: "none", delay: 0.6 });
-  gsap.to("#signoff", { opacity: 1, duration: 0.8, delay: 1.4 });
+  gsap.to("#odds", { opacity: 1, duration: 0.8, delay: 1.0 });
+  gsap.to("#signoff", { opacity: 1, duration: 0.8, delay: 1.6 });
   gsap.to(".end-btns", { opacity: 1, pointerEvents: "auto", duration: 0.6, delay: 2.2 });
   rainChips();
   VO.play("credits", "Happy twentieth birthday, Paytyn! From Yusuf. And yes... " + CONFIG.creditsLine.replace("AI", "A.I."));
@@ -317,8 +321,6 @@ let started = false;
 $("#startBtn").addEventListener("click", () => {
   if (started) return;
   started = true;
-  hideRotate();
-  goBigScreen();
   Music.play();
   Music.check();
   VO.unlock();
@@ -351,12 +353,11 @@ $("#cake").addEventListener("click", () => {
 $("#replay").addEventListener("click", () => {
   creditsShown = false;
   gsap.killTweensOf("#credits span");
-  gsap.set(["#credits", "#signoff"], { opacity: 0 });
+  gsap.set(["#credits", "#signoff", "#odds"], { opacity: 0 });
   gsap.set(".end-btns", { opacity: 0, pointerEvents: "none" });
   $("#cake").classList.remove("out");
   $("#wish").textContent = "tap the candles & make a wish ✨";
-  $(".intro-ui").style.opacity = 1;
-  $("#pixSub").textContent = "EST. NOV 3, 2006";
+  $("#tapText").textContent = "tap the chip to start";
   Music.restart();
   tl.restart();
 });
@@ -381,27 +382,3 @@ $("#theatre").addEventListener("pointerdown", (e) => {
   $("#wallClose").onclick = () => { $("#wall").hidden = true; };
   $("#lightbox").onclick = () => { $("#lightbox").hidden = true; };
 })();
-
-/* ------------------------------------------------------------------ "TURN YOUR PHONE" PROMPT */
-const portraitMQ = matchMedia("(orientation: portrait)");
-const isPhone = matchMedia("(pointer: coarse)").matches && Math.min(screen.width, screen.height) < 600;
-let rotateDismissed = false;
-function hideRotate() { gsap.to("#rotate", { autoAlpha: 0, duration: 0.4 }); }
-function updateRotate() {
-  if (started || rotateDismissed || !isPhone) return hideRotate();
-  if (portraitMQ.matches) gsap.to("#rotate", { autoAlpha: 1, duration: 0.3 });
-  else hideRotate();
-}
-portraitMQ.addEventListener ? portraitMQ.addEventListener("change", updateRotate) : portraitMQ.addListener(updateRotate);
-$("#rotateSkip").addEventListener("click", () => { rotateDismissed = true; hideRotate(); });
-gsap.set("#rotate", { autoAlpha: 0 });
-updateRotate();
-
-// Android: go fullscreen and hold landscape once she taps (iPhones ignore this, that's fine)
-function goBigScreen() {
-  try {
-    const el = document.documentElement;
-    if (!isPhone || portraitMQ.matches || !el.requestFullscreen) return;
-    el.requestFullscreen({ navigationUI: "hide" }).then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock("landscape").catch(() => {})).catch(() => {});
-  } catch (e) {}
-}

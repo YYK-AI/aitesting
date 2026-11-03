@@ -2,10 +2,12 @@
 
 A ~1 minute animated birthday site for Paytyn's 20th (Nov 3, 2006). Scan `qr-code.png` to open it.
 
-**The show:** pixel-art Cherokee, NC (Smoky Mountains, river, elk, casino with poker chips) → tap the chip →
-theatre curtains open and the "Happy Birthday Peyton" song plays on the stage screen, then dims →
-Act I (outdoor pics) → Act II (squad pics) → Act III: Zac Brown Band (music switches to *Chicken Fried*) →
-finale with a cake to blow out, confetti, falling "AI" chips and the AI-credits line. Replay + photo wall at the end.
+**The show (made for a phone held upright):** a smooth illustrated Cherokee, NC — Smoky Mountain ridges in blue haze, drifting fog,
+Mingo Falls, the Oconaluftee River, elk in the meadow, rhododendron — with a "volume up" prompt and a poker chip to tap →
+the camera pulls back and Cherokee becomes the backdrop of the Mountainside Theatre stage; the "Happy Birthday Peyton" song plays
+on a screen that drops in, then dims → Act I (outdoor pics) → Act II (squad pics) → Act III: Zac Brown Band (*Chicken Fried* from the chorus) →
+dusk falls for the finale: cake to blow out, fireflies, a faint bat-signal, falling "AI" chips, the AI-credits line, "may the odds be ever
+in your favor", a mockingjay pin and "— from Yusuf". Replay + photo wall at the end. Colors: Carolina blue + navy.
 
 ## Put it online (GitHub Pages)
 1. Repo **Settings → General → Danger Zone → Change visibility → Public** (Pages on private repos needs a paid plan).
