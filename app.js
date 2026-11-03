@@ -26,9 +26,11 @@ const CONFIG = {
   message: "Hope you have an AWESOME year ahead!",
   creditsLine: "And yes, this is where all my AI credits go 😂",
   signoff: "Yusuf",
-  // bottom strip. "ᎤᎵᎮᎵᏍᏗ ᏣᏕᏘᏯ" (ulihelisdi tsadetiya) = "happy birthday" in Cherokee syllabary
-  cherokee: "ᎤᎵᎮᎵᏍᏗ ᏣᏕᏘᏯ",
-  cherokeeLatin: "ulihelisdi tsadetiya",
+  // bottom strip, in the Eastern Band (Kituwah / North Carolina) form, as taught by Eastern Band elder
+  // Robert Bushyhead in the WCU Cherokee lesson "Happy Birthday" (Lesson 6B):
+  // ᎤᎵᎮᎵᏍᏗ ᏣᏕᏘᏯ ᎩᎾᎵ = Ulihelisdi tsadetiya ginali = "Happy birthday to you, my friend"
+  cherokee: "ᎤᎵᎮᎵᏍᏗ ᏣᏕᏘᏯ ᎩᎾᎵ",
+  cherokeeLatin: "happy birthday, my friend",
   ticker: ["HAPPY 21ST BIRTHDAY PAYTYN", "MAY THE ODDS BE EVER IN YOUR FAVOR"],
 };
 
