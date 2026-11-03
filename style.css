@@ -34,6 +34,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 /* ---------------------------------------------------------- WORLD (Cherokee) */
 #world{position:fixed;inset:0;z-index:0;transform-origin:50% 45%;background:#86b6da;overflow:hidden}
 #world canvas{position:absolute;inset:0;width:100%;height:100%}
+#world #fx2{z-index:6}
 .clouds i{position:absolute;top:var(--y);left:0;width:var(--w);aspect-ratio:3.2;border-radius:50%;
   background:radial-gradient(50% 60% at 30% 60%,rgba(255,255,255,.95),rgba(255,255,255,0) 70%),
              radial-gradient(45% 70% at 60% 45%,rgba(255,255,255,.9),rgba(255,255,255,0) 70%),
@@ -46,7 +47,17 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .mist.m1{top:42%;height:11%;opacity:.75}
 .mist.m2{top:60%;height:9%;opacity:.55;animation-duration:50s;animation-direction:reverse;background-size:34vmin 100%}
 @keyframes mist{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-#night{position:absolute;inset:0;opacity:0;pointer-events:none;
+#photobg{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity 1.5s}
+#photobg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;will-change:transform,opacity}
+/* photo mode: real photos replace the illustration; fog, fireflies and dusk still play on top */
+#world.photo-mode #photobg{opacity:1}
+#world.photo-mode #far,#world.photo-mode #mid,#world.photo-mode #fx,#world.photo-mode #fore,#world.photo-mode .clouds{display:none}
+#world.photo-mode::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,rgba(11,26,51,.55),rgba(19,41,75,.15) 32%,rgba(11,26,51,0) 60%,rgba(11,26,51,.4))}
+body.photo-mode .eyebrow,body.photo-mode .title,body.photo-mode .pix-sub{color:#fff;text-shadow:0 3px 18px rgba(11,26,51,.65)}
+body.photo-mode .pix-sub{color:var(--carolina-3)}
+#world.photo-mode .mist{z-index:3;opacity:.35}
+#night{position:absolute;z-index:4;inset:0;opacity:0;pointer-events:none;
   background:linear-gradient(180deg,rgba(9,20,45,.86) 0%,rgba(14,32,66,.62) 45%,rgba(10,22,44,.55) 100%)}
 #night .stars{position:absolute;inset:0 0 55% 0;
   background-image:radial-gradient(1.2px 1.2px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 28% 8%,#fff,transparent),
@@ -55,7 +66,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   radial-gradient(1px 1px at 6% 40%,#fff,transparent),radial-gradient(1.3px 1.3px at 36% 36%,#fff,transparent),
   radial-gradient(1px 1px at 70% 44%,#fff,transparent),radial-gradient(1px 1px at 54% 4%,#fff,transparent)}
 /* bat-signal on a cloud — only shows at dusk */
-.batsignal{position:absolute;right:9%;top:10%;width:26vmin;aspect-ratio:1.6;border-radius:50%;opacity:0;
+.batsignal{position:absolute;right:9%;top:10%;width:26vmin;aspect-ratio:1.6;border-radius:50%;opacity:0;z-index:5 !important;
   background:radial-gradient(closest-side,rgba(255,244,190,.75),rgba(255,236,160,.35) 70%,rgba(255,236,160,0));display:grid;place-items:center;z-index:2}
 .batsignal svg{width:72%;fill:rgba(20,26,40,.85)}
 

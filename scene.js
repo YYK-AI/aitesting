@@ -12,7 +12,7 @@ const Scene = (() => {
   for (const k in cvs) ctx[k] = cvs[k].getContext("2d");
   let W, H, S, DPR, raf = 0, last = 0;
   const geo = {};
-  const state = { night: 0 };
+  const state = { night: 0, photo: false };
 
   /* ---------- helpers */
   const hash = (i, s) => { const v = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return v - Math.floor(v); };
@@ -339,7 +339,7 @@ const Scene = (() => {
     c.clearRect(0, 0, W, H);
     const { center } = geo.river, n = state.night;
     c.lineCap = "round";
-    for (let k = 0; k < 46; k++) {
+    if (!state.photo) for (let k = 0; k < 46; k++) {
       const pos = (hash(k, 9) + s * 0.05 * (0.6 + hash(k, 4))) % 1;
       const i = Math.floor(pos * (center.length - 1)), p = center[i], q = center[Math.min(center.length - 1, i + 1)];
       const lat = (hash(k, 5) - 0.5) * 1.6 * p[2];
@@ -350,7 +350,7 @@ const Scene = (() => {
       c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(ang) * len, y + Math.sin(ang) * len * 0.3); c.stroke();
     }
     // spray at the base of the falls
-    for (let k = 0; k < 8; k++) {
+    if (!state.photo) for (let k = 0; k < 8; k++) {
       const ph = (s * 0.5 + hash(k, 2)) % 1, r = (6 + ph * 20) * u;
       g = c.createRadialGradient(fx + (hash(k, 6) - 0.5) * 20 * u, bot - ph * 14 * u, 0, fx, bot - ph * 14 * u, r);
       g.addColorStop(0, `rgba(255,255,255,${0.35 * (1 - ph)})`); g.addColorStop(1, "rgba(255,255,255,0)");
@@ -363,7 +363,7 @@ const Scene = (() => {
       c.fillStyle = l.c; c.beginPath(); c.ellipse(0, 0, 3 * u, 1.4 * u, 0, 0, Math.PI * 2); c.fill(); c.restore();
     }
     // butterflies over the meadow (daytime)
-    if (n < 0.8) for (const b of geo.butterflies) {
+    if (n < 0.8 && !state.photo) for (const b of geo.butterflies) {
       const x = (b.x + Math.sin(s * 0.4 + b.p) * 40 * u + W) % W, y = b.y + Math.sin(s * 0.9 + b.p * 2) * 12 * u;
       const f = Math.abs(Math.sin(s * 12 + b.p)) * 3 * u;
       c.fillStyle = `rgba(255,236,150,${1 - n})`;
@@ -380,7 +380,7 @@ const Scene = (() => {
     }
     // chip glint
     const gl = (s / 3.2) % 1;
-    if (gl < 0.1 && n < 0.9) {
+    if (gl < 0.1 && n < 0.9 && !state.photo) {
       const a = 1 - Math.abs(gl - 0.05) / 0.05, { x, y } = geo.chips;
       c.strokeStyle = `rgba(255,255,255,${a})`; c.lineWidth = 1.2;
       c.beginPath(); c.moveTo(x - 5 * u, y); c.lineTo(x + 5 * u, y); c.moveTo(x, y - 5 * u); c.lineTo(x, y + 5 * u); c.stroke();

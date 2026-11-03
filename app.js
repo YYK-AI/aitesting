@@ -24,11 +24,13 @@ const CONFIG = {
     { src: "img/lego-batman.jpg",   cap: "certified Lego engineer",  sticker: "🦇" },
     { src: "img/brick-wall.jpg",    cap: "main character energy",    sticker: "✨" },
     { src: "img/diner-crew.jpg",    cap: "late-night diner council", sticker: "🍳" },
-    { src: "img/stameys.jpg",       cap: "BBQ & besties",            sticker: "🍔" },
   ],
   concertCaption: "Zac Brown Band night 🤠🇺🇸",
   // Photos shown on the Zac Brown Band ticket (they cross-fade if there's more than one)
-  concertPhotos: ["img/zbb-concert.jpg"],
+  concertPhotos: ["img/stameys.jpg", "img/zbb-concert.jpg"], // pre-show Stamey's, then the show
+  // Real Cherokee nature photos for the backdrop (slow zoom + cross-fade). When this list is empty
+  // or the photos fail to load, the illustrated scene is shown instead.
+  naturePhotos: [],
   signoff: "— from Yusuf 💙",
   creditsLine: "This is where all my AI credits go to",
   tickerText: "HAPPY 20TH BIRTHDAY PAYTYN  ★  LIVE FROM THE GREAT SMOKY MOUNTAINS  ★  MAY THE ODDS BE EVER IN YOUR FAVOR  ★  ALL IN ON PAYTYN ♠  ★  EST. NOV 3, 2006  ★  GOTHAM'S FINEST LEGO ENGINEER  ★  ",
@@ -155,6 +157,34 @@ function rainChips(n = 26) {
 
 /* ------------------------------------------------------------------ BUILD PHOTOS */
 const allPhotos = [...CONFIG.photosActOne, ...CONFIG.photosActTwo, ...CONFIG.concertPhotos.map((src) => ({ src, cap: CONFIG.concertCaption, sticker: "🤠" }))];
+
+/* ------------------------------------------------------------------ NATURE PHOTO BACKDROP */
+(() => {
+  const list = CONFIG.naturePhotos || [];
+  if (!list.length) return;
+  const box = document.getElementById("photobg");
+  const imgs = list.map((p, i) => {
+    const im = new Image();
+    im.alt = ""; im.decoding = "async"; im.src = p.src;
+    im.style.objectPosition = p.focus || "50% 50%";
+    box.appendChild(im);
+    return im;
+  });
+  imgs[0].addEventListener("load", () => {
+    document.getElementById("world").classList.add("photo-mode");
+    Scene.state.photo = true;
+    document.body.classList.add("photo-mode");
+    let i = 0;
+    const show = (k) => {
+      const im = imgs[k];
+      gsap.fromTo(im, { opacity: 0, scale: 1.12 }, { opacity: 1, duration: 2.2, ease: "power1.inOut" });
+      gsap.to(im, { scale: 1, duration: 12, ease: "none" });
+      imgs.forEach((o, j) => { if (j !== k) gsap.to(o, { opacity: 0, duration: 2.2, delay: 0.2 }); });
+    };
+    show(0);
+    if (imgs.length > 1) setInterval(() => { i = (i + 1) % imgs.length; if (imgs[i].complete && imgs[i].naturalWidth) show(i); }, 9000);
+  }, { once: true });
+})();
 $(".t-photo").innerHTML = CONFIG.concertPhotos.map((src) => `<img src="${src}" alt="">`).join("");
 const concertImgs = [...document.querySelectorAll(".t-photo img")];
 $("#signoff").textContent = CONFIG.signoff;
