@@ -8,19 +8,14 @@ const CONFIG = {
   // Zac Brown Band — Chicken Fried, layered under the birthday song from Chapter III on
   zbbSong: "media/chicken-fried.mp3",
   mix: { bday: 0.8, bdayWithZbb: 0.55, zbb: 0.5 }, // volumes (0–1)
-  actOne: { num: "CHAPTER I", title: "The Wild Side" },
-  actTwo: { num: "CHAPTER II", title: "The Squad" },
-  actThree: { num: "CHAPTER III", title: "Zac Brown Band" },
-  photosActOne: [
-    { src: "img/outward-bound.jpg", sticker: "⛑️", tall: true },
-    { src: "img/trail-nap.jpg",     sticker: "😴", tall: true },
+  // the pics, in order — her solo ones are sprinkled between the ones together
+  photos: [
     { src: "img/canyon.jpg",        sticker: "🏜️" },
-    { src: "img/raft-crew.jpg",     sticker: "🛶" },
-    { src: "img/raft-paddles.jpg",  sticker: "⚔️" },
-  ],
-  photosActTwo: [
+    { src: "img/outward-bound.jpg", sticker: "⛑️", tall: true },
     { src: "img/lego-batman.jpg",   sticker: "🦇" },
     { src: "img/brick-wall.jpg",    sticker: "✨" },
+    { src: "img/trail-nap.jpg",     sticker: "😴", tall: true },
+    { src: "img/raft-paddles.jpg",  sticker: "⚔️" },
     { src: "img/diner-crew.jpg",    sticker: "🍳" },
   ],
   // Photos shown on the Zac Brown Band ticket (they cross-fade): pre-show Stamey's, then the show
@@ -129,7 +124,7 @@ function rainChips(n = 26) {
 }
 
 /* ------------------------------------------------------------------ BUILD PHOTOS */
-const allPhotos = [...CONFIG.photosActOne, ...CONFIG.photosActTwo, ...CONFIG.concertPhotos.map((src) => ({ src }))];
+const allPhotos = [...CONFIG.photos, ...CONFIG.concertPhotos.map((src) => ({ src }))];
 
 /* ------------------------------------------------------------------ NATURE PHOTO BACKDROP */
 (() => {
@@ -170,17 +165,20 @@ function makePolaroid(p) {
   $("#photos").appendChild(el);
   return el;
 }
-const actOneEls = CONFIG.photosActOne.map(makePolaroid);
-const actTwoEls = CONFIG.photosActTwo.map(makePolaroid);
+const photoEls = CONFIG.photos.map(makePolaroid);
 gsap.set(".polaroid", { xPercent: -50, yPercent: -50 });
 
 /* ------------------------------------------------------------------ THE SHOW TIMELINE */
-const STEP = 2.9; // seconds each photo gets the spotlight
+const STEP = 3.1; // seconds each photo gets the spotlight
 let tl;
-gsap.set(["#ticker", ".balloons", "#dim"], { opacity: 0 });
+gsap.set(["#ticker", ".balloons"], { opacity: 0 });
+gsap.set("#dim", { opacity: 0.35 });
+gsap.set("#hbiChip", { opacity: 0 });
+// "Happy Birthday Paytyn" greets her as soon as the page opens
+gsap.from(".hbi-word", { opacity: 0, y: 40, rotationX: -80, stagger: 0.18, duration: 0.9, ease: "back.out(1.8)", delay: 0.3 });
+gsap.from(".hbi-name .l", { opacity: 0, scale: 0, rotation: () => rand(-60, 60), stagger: 0.08, duration: 0.6, ease: "back.out(3)", delay: 0.9 });
 // the birthday video starts out filling the background, faintly, behind the intro
 gsap.set("#screen", { ...screenBoxes().cover, opacity: 0.22 });
-function setAct(a) { $("#actnum").textContent = a.num; $("#acttitle").textContent = a.title; }
 
 /* ---------- poker chips: tossed like a dealer's flourish */
 const CHIP_COLORS = [["#13294b", "#7bafd4"], ["#7bafd4", "#13294b"], ["#c8102e", "#ffffff"], ["#ffffff", "#7bafd4"], ["#0b1a33", "#f3d27a"]];
@@ -235,15 +233,6 @@ function photoRun(tl, els, t0) {
   return end + 0.4;
 }
 
-/* ---------- chapter cards: a chip flips over to reveal the title */
-function actCard(tl, a, t) {
-  tl.call(() => setAct(a), null, t);
-  tl.fromTo("#actcard", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2)" }, t);
-  tl.fromTo("#actchip", { rotationY: 0 }, { rotationY: 720, duration: 1, ease: "power2.out" }, t);
-  tl.to("#actcard", { opacity: 0, scale: 1.2, duration: 0.4, ease: "power2.in" }, t + 1.7);
-  return t + 2.1;
-}
-
 function screenBoxes() {
   // the video card sits just under the "Happy Birthday" title block
   const hb = $("#hbIntro").getBoundingClientRect();
@@ -259,49 +248,34 @@ function screenBoxes() {
 
 function buildShow() {
   tl = gsap.timeline({ paused: true });
-  const box = screenBoxes();
 
-  // --- the chip is dealt: it spins, chips burst everywhere, the intro clears
+  // --- the chip is dealt: it spins, chips burst everywhere, the bottom card clears
   tl.to("#startBtn", { scale: 1.3, rotation: 720, duration: 0.8, ease: "power2.out" }, 0);
   tl.to("#startBtn", { scale: 0, opacity: 0, duration: 0.3, ease: "power2.in" }, 0.8);
   tl.call(() => { $("#tapText").textContent = "here we go…"; }, null, 0.05);
   tl.call(() => chipBurst(0.5, 0.78, 18, 50), null, 0.85);
   tl.to(".intro-bottom", { opacity: 0, y: 30, duration: 0.5 }, 1.0);
-  tl.to(".intro-top", { opacity: 0, y: -30, duration: 0.6 }, 1.2);
-  tl.set("#intro", { autoAlpha: 0 }, 1.9);
+  tl.set("#intro", { autoAlpha: 0 }, 1.6);
 
-  // --- HAPPY BIRTHDAY, full screen over Cherokee
-  let t = 1.7;
-  tl.to("#dim", { opacity: 0.35, duration: 1 }, t);
-  tl.fromTo("#hbIntro", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, t);
-  tl.from(".hbi-eyebrow", { opacity: 0, y: 14, duration: 0.6 }, t + 0.1);
-  tl.from(".hbi-word", { opacity: 0, y: 50, rotationX: -80, stagger: 0.18, duration: 0.8, ease: "back.out(1.8)" }, t + 0.3);
-  tl.from(".hbi-name .l", { opacity: 0, scale: 0, rotation: () => rand(-60, 60), stagger: 0.08, duration: 0.6, ease: "back.out(3)" }, t + 0.9);
-  tl.fromTo("#hbiChip", { y: -innerHeight * 0.6, rotation: -540, opacity: 1 }, { y: 0, rotation: 0, duration: 1.1, ease: "bounce.out" }, t + 1.4);
-  tl.call(() => bigBurst(), null, t + 1.6);
-  tl.fromTo(".balloons", { opacity: 0 }, { opacity: 1, duration: 1.5 }, t + 1);
-  tl.to(["#ticker", "#skip"], { opacity: 1, pointerEvents: "auto", duration: 0.6 }, t + 2);
-  // the background video comes forward as a card under the title...
-  tl.to("#screen", { ...box.card, opacity: 1, duration: 1.1, ease: "power3.inOut" }, t + 2);
-  // ...then grows to fill the background and fades out behind the pics (song keeps playing)
-  t += 8;
+  // --- the title celebrates: the 21 chip drops in under her name
+  tl.fromTo("#hbiChip", { y: -innerHeight * 0.6, rotation: -540, opacity: 1 }, { y: 0, rotation: 0, duration: 1.1, ease: "bounce.out" }, 0.9);
+  tl.to(".hbi-name .l", { y: -14, stagger: 0.06, duration: 0.25, yoyo: true, repeat: 1, ease: "power2.out" }, 1.4);
+  tl.call(() => bigBurst(), null, 1.3);
+  tl.fromTo(".balloons", { opacity: 0 }, { opacity: 1, duration: 1.5 }, 1.2);
+  tl.to(["#ticker", "#skip"], { opacity: 1, pointerEvents: "auto", duration: 0.6 }, 1.8);
+
+  // --- the pics (the birthday video keeps playing faintly in the background)
+  let t = 6.2;
   tl.to("#hbIntro", { autoAlpha: 0, y: -40, duration: 0.6 }, t);
-  tl.to("#screen", { ...box.cover, opacity: 0.16, duration: 1.4, ease: "power2.inOut" }, t);
-
-  // --- CHAPTER I & II
-  t = actCard(tl, CONFIG.actOne, t + 0.9);
-  t = photoRun(tl, actOneEls, t);
-  t = actCard(tl, CONFIG.actTwo, t);
-  t = photoRun(tl, actTwoEls, t);
+  tl.to("#screen", { opacity: 0.16, duration: 1 }, t);
+  t = photoRun(tl, photoEls, t + 0.5);
 
   // --- CHAPTER III: Zac Brown Band
   tl.addLabel("zbb", t);
   tl.call(() => Mix.toZbb(), null, t - 1.5);
-  t = actCard(tl, CONFIG.actThree, t);
   tl.to(".beam", { opacity: 1, duration: 0.8 }, t - 0.6);
   tl.to(".beam.b1", { rotation: 10, duration: 2.2, yoyo: true, repeat: 3, ease: "sine.inOut" }, t - 0.6);
   tl.to(".beam.b2", { rotation: -10, duration: 2.2, yoyo: true, repeat: 3, ease: "sine.inOut" }, t - 0.6);
-  tl.to("#screen", { opacity: 0.16, duration: 1 }, t);
   tl.fromTo("#concert", { opacity: 0, scale: 0.5, rotation: -8 }, { opacity: 1, scale: 1, rotation: -2, duration: 1, ease: "back.out(1.6)" }, t);
   tl.call(() => bigBurst(flagColors), null, t + 0.6);
   const zbbLen = Math.max(8, 1.6 + concertImgs.length * 2.8);
