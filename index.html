@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Happy 20th, Paytyn! 🎂</title>
+<meta name="description" content="Tap the chip. A little birthday show for Paytyn, live from Cherokee, NC.">
+<meta property="og:title" content="Happy 20th Birthday, Paytyn! 🎂">
+<meta property="og:description" content="Tap the chip to deal in.">
+<meta property="og:image" content="img/raft-paddles.jpg">
+<meta name="theme-color" content="#120b2e">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ THEATRE (always rendered underneath the intro) ============ -->
+<main id="theatre" aria-label="The Paytyn Show">
+  <div class="backdrop">
+    <div class="stars"></div>
+    <div class="moon"></div>
+    <svg class="smokies" viewBox="0 0 400 140" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <path fill="#3a3f7d" d="M0 70 L30 48 L55 60 L85 30 L115 55 L140 40 L170 62 L205 28 L240 52 L270 38 L300 60 L330 34 L365 54 L400 42 L400 140 L0 140Z"/>
+      <rect y="55" width="400" height="20" fill="#8f8fd0" opacity=".18"/>
+      <path fill="#2b2f66" d="M0 88 L25 70 L60 84 L95 62 L130 80 L160 66 L195 86 L230 64 L262 82 L295 68 L330 86 L362 70 L400 84 L400 140 L0 140Z"/>
+      <rect y="78" width="400" height="16" fill="#8f8fd0" opacity=".14"/>
+      <path fill="#1c1f4a" d="M0 106 L40 90 L75 102 L110 86 L150 104 L185 92 L225 106 L260 90 L300 104 L340 92 L400 104 L400 140 L0 140Z"/>
+    </svg>
+  </div>
+
+  <div class="balloons" aria-hidden="true">
+    <i style="--x:8%;--d:13s;--h:340"></i><i style="--x:22%;--d:16s;--h:45"></i>
+    <i style="--x:78%;--d:14s;--h:200"></i><i style="--x:90%;--d:17s;--h:300"></i>
+    <i style="--x:64%;--d:19s;--h:50"></i>
+  </div>
+
+  <div class="beam b1"></div><div class="beam b2"></div>
+
+  <div id="screen">
+    <div class="screen-fallback"><span>🎂</span><b>HAPPY BIRTHDAY</b><b>PAYTYN</b></div>
+    <div id="ytbox"><div id="yt"></div></div>
+  </div>
+  <div id="nowshowing">★ NOW SHOWING ★<br><b>Happy Birthday, Paytyn</b></div>
+
+  <div id="photos"></div>
+
+  <div id="actcard"><small id="actnum">ACT I</small><b id="acttitle">The Wild Side</b></div>
+
+  <div id="concert">
+    <div class="ticket">
+      <div class="t-photo"><img src="img/zbb-concert.jpg" alt="The crew at the Zac Brown Band concert"></div>
+      <div class="t-info">
+        <small>ADMIT ONE · BIRTHDAY GIRL</small>
+        <b>ZAC BROWN BAND</b>
+        <span>SEC 225 · ROW ∞ · SEAT 20</span>
+      </div>
+      <div class="t-stub">🎟️<span>NO. 1103</span></div>
+    </div>
+    <div class="nowplaying">♪ now playing: <b>Chicken Fried</b> — Zac Brown Band</div>
+  </div>
+
+  <div id="finale">
+    <div class="hb">
+      <div class="hb-1">Happy</div>
+      <div class="hb-2">Birthday</div>
+      <div class="hb-name">Paytyn</div>
+    </div>
+    <button id="cake" aria-label="Blow out the candles">
+      <div class="candles">
+        <div class="candle c2"><i class="flame"></i><span>2</span></div>
+        <div class="candle c0"><i class="flame"></i><span>0</span></div>
+      </div>
+      <div class="tier top"></div>
+      <div class="tier bottom"></div>
+      <div class="plate"></div>
+    </button>
+    <p class="wish" id="wish">tap the candles &amp; make a wish ✨</p>
+    <p id="credits">This is where all my AI credits go to <span>💸</span></p>
+    <p id="signoff">— love, your crew 💛</p>
+    <div class="end-btns">
+      <button id="replay">↻ Replay</button>
+      <button id="wallBtn">📸 All the pics</button>
+    </div>
+  </div>
+
+  <div class="curtain left"></div>
+  <div class="curtain right"></div>
+  <div class="valance"></div>
+  <div class="marquee" id="marquee">
+    <span>The Paytyn Show</span>
+    <small>LIVE FROM CHEROKEE, N.C.</small>
+  </div>
+  <div class="floor"></div>
+  <div class="ticker"><div class="ticker-track"></div></div>
+
+  <button id="skip" aria-label="Skip to the end">skip ⏭</button>
+  <button id="soundPill">🔊 tap for music</button>
+</main>
+
+<!-- ============ PIXEL CHEROKEE INTRO ============ -->
+<section id="intro">
+  <canvas id="pix" aria-hidden="true"></canvas>
+  <div class="intro-ui">
+    <div class="road-sign">
+      <small>WELCOME TO</small>
+      <b>CHEROKEE</b>
+      <small>NORTH CAROLINA</small>
+    </div>
+    <h1 class="pix-title"><span>PAYTYN'S</span><span class="lvl">LEVEL 20</span></h1>
+    <p class="pix-sub" id="pixSub">EST. NOV 3, 2006</p>
+    <button id="startBtn" class="chip" style="--c:#d62839" aria-label="Start the show">
+      <span class="chip-face">20</span>
+    </button>
+    <p class="tap" id="tapText">TAP THE CHIP TO DEAL IN</p>
+    <p class="hint">🔊 sound on</p>
+  </div>
+</section>
+
+<!-- ============ PHOTO WALL ============ -->
+<div id="wall" hidden>
+  <button class="close" id="wallClose" aria-label="Close">✕</button>
+  <h2>The Paytyn Archives</h2>
+  <div class="grid" id="wallGrid"></div>
+</div>
+<div id="lightbox" hidden><img alt=""><p></p></div>
+
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/confetti.browser.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
