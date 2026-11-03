@@ -15,5 +15,6 @@ in your favor", a mockingjay pin and "— from Yusuf". Replay + photo wall at th
 3. After a minute or two it's live at **https://yyk-ai.github.io/aitesting/**, the URL inside `qr-code.png`.
 
 ## Tweaks
-- Songs, start times, captions, ticker text: the `CONFIG` block at the top of `app.js`.
-- Voice-overs: drop ElevenLabs mp3s into `audio/` (see `audio/README.md`).
+- Songs, volumes, photos, chapter titles, the final message and ticker text: the `CONFIG` block at the top of `app.js`.
+- Media: `media/birthday.mp4` (the birthday song video, plays in the background from the start) and `media/chicken-fried.mp3`
+  (layered in from the Zac Brown Band chapter).

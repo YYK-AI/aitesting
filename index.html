@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Happy 20th, Paytyn! 🎂</title>
+<title>Happy Birthday, Paytyn! 🎂</title>
 <meta name="description" content="A little birthday show for Paytyn, live from Cherokee, NC. Volume up!">
-<meta property="og:title" content="Happy 20th Birthday, Paytyn! 🎂">
+<meta property="og:title" content="Happy Birthday, Paytyn! 🎂">
 <meta property="og:description" content="Volume up, then tap the chip.">
 <meta property="og:image" content="img/raft-paddles.jpg">
 <meta name="theme-color" content="#5f98c6">
@@ -19,7 +19,7 @@
   <canvas id="sky"></canvas>
   <div id="photobg"></div>
   <div class="clouds"><i style="--y:9%;--w:38vmin;--d:120s;--o:-.2"></i><i style="--y:18%;--w:26vmin;--d:95s;--o:-.65"></i><i style="--y:5%;--w:20vmin;--d:140s;--o:-.45"></i><i style="--y:25%;--w:30vmin;--d:110s;--o:-.9"></i></div>
-  <div class="batsignal"><svg viewBox="0 0 100 60"><path d="M50 20 L47 12 L45 19 C40 14 31 12 22 14 C27 18 28 23 24 27 C17 24 9 25 2 30 C11 31 17 36 19 44 C25 39 33 39 39 43 L44 37 L50 42 L56 37 L61 43 C67 39 75 39 81 44 C83 36 89 31 98 30 C91 25 83 24 76 27 C72 23 73 18 78 14 C69 12 60 14 55 19 L53 12 Z"/></svg></div>
+  <div class="batsignal"><svg viewBox="0 0 100 56"><path d="M 50.0 23.0 L 52.6 15.5 L 54.6 8.5 L 56.4 20.5 C 59.5 22.0 63.0 21.5 66.0 19.0 C 72.0 13.0 82.0 9.5 95.0 10.0 C 89.0 14.5 87.5 20.0 90.0 26.5 C 84.5 24.0 78.5 26.0 76.5 32.0 C 72.5 28.5 66.5 30.5 64.5 37.5 C 60.0 34.5 54.5 38.5 50.0 48.0 C 45.5 38.5 40.0 34.5 35.5 37.5 C 33.5 30.5 27.5 28.5 23.5 32.0 C 21.5 26.0 15.5 24.0 10.0 26.5 C 12.5 20.0 11.0 14.5 5.0 10.0 C 18.0 9.5 28.0 13.0 34.0 19.0 C 37.0 21.5 40.5 22.0 43.6 20.5 L 45.4 8.5 L 47.4 15.5 L 50.0 23.0 Z"/></svg></div>
   <canvas id="far"></canvas>
   <div class="mist m1"></div>
   <canvas id="mid"></canvas>
@@ -43,13 +43,13 @@
 
   <div id="screen">
     <div class="screen-fallback"><span>🎂</span><b>Happy Birthday</b><b>Paytyn</b></div>
-    <div id="ytbox"><div id="yt"></div></div>
+    <video id="bgvid" muted autoplay playsinline loop preload="auto" poster="media/birthday-poster.jpg"></video>
   </div>
   <div id="hbIntro">
     <p class="hbi-eyebrow">live from Cherokee, N.C.</p>
     <h2 class="hbi-big"><span class="hbi-word">Happy</span> <span class="hbi-word">Birthday</span></h2>
     <div class="hbi-name">Paytyn</div>
-    <div id="hbiChip" class="chip" style="--c:#13294b;--c2:#7bafd4"><span class="chip-face">20</span></div>
+    <div id="hbiChip" class="chip" style="--c:#13294b;--c2:#7bafd4"><span class="chip-face">♥</span></div>
   </div>
 
   <div id="photos"></div>
@@ -65,7 +65,7 @@
       <div class="t-info">
         <small>ADMIT ONE · BIRTHDAY GIRL</small>
         <b>ZAC BROWN BAND</b>
-        <span>SEC 225 · ROW ∞ · SEAT 20</span>
+        <span>SEC 225 · ROW ∞ · SEAT ♥</span>
       </div>
       <div class="t-stub"><span>NO. 1103</span><svg class="mj" viewBox="0 0 100 100" aria-label="mockingjay pin"><use href="#mockingjay"/></svg></div>
     </div>
@@ -78,18 +78,14 @@
       <div class="hb-name">Paytyn</div>
     </div>
     <button id="cake" aria-label="Blow out the candles">
-      <div class="candles">
-        <div class="candle"><i class="flame"></i><span>2</span></div>
-        <div class="candle"><i class="flame"></i><span>0</span></div>
-      </div>
+      <div class="candles"><div class="candle"><i class="flame"></i></div><div class="candle"><i class="flame"></i></div><div class="candle"><i class="flame"></i></div><div class="candle"><i class="flame"></i></div><div class="candle"><i class="flame"></i></div></div>
       <div class="tier top"></div>
       <div class="tier bottom"></div>
       <div class="plate"></div>
     </button>
-    <p class="wish" id="wish">tap the candles &amp; make a wish ✨</p>
-    <p id="credits">This is where all my AI credits go to <span>💸</span></p>
-    <p id="odds">may the odds be ever in your favor</p>
-    <p id="signoff"><svg class="mj" viewBox="0 0 100 100"><use href="#mockingjay"/></svg><span>— from Yusuf 💙</span></p>
+    <p id="message"></p>
+    <p id="credits"></p>
+    <p id="signoff"><svg class="mj" viewBox="0 0 100 100"><use href="#mockingjay"/></svg><span>— Yusuf 💙</span></p>
     <div class="end-btns">
       <button id="replay">↻ Replay</button>
       <button id="wallBtn">📸 All the pics</button>
@@ -108,11 +104,11 @@
     <div class="intro-top">
       <p class="eyebrow">Welcome to Cherokee, North Carolina</p>
       <h1 class="title">Paytyn</h1>
-      <p class="pix-sub" id="pixSub">turns twenty · est. Nov 3, 2006</p>
+      <p class="pix-sub" id="pixSub">it's your birthday · November 3</p>
     </div>
     <div class="intro-bottom">
       <p class="volume"><span class="spk">🔊<i></i><i></i></span> Turn your volume up</p>
-      <button id="startBtn" class="chip" aria-label="Start the show"><span class="chip-face">20</span></button>
+      <button id="startBtn" class="chip" aria-label="Start the show"><span class="chip-face">♠</span></button>
       <p class="tap" id="tapText">tap the chip to start</p>
     </div>
   </div>

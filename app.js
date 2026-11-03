@@ -1,39 +1,36 @@
 /* =========================================================================
-   The Paytyn Show — a tiny birthday "movie" for Paytyn's 20th
+   The Paytyn Show — a tiny birthday "movie" for Paytyn
    Edit the CONFIG block to change songs, start times or captions.
    ========================================================================= */
 const CONFIG = {
-  // "Epic Happy Birthday Song — Peyton" (the video you picked)
-  bdayVideo: "huvuvjL1fYs",
-  bdayStart: 0,
-  // Zac Brown Band — "Chicken Fried" (official video, 4:33). The singing starts at 1:23
-  // ("You know I like my chicken fried..."); everything before that is a spoken intro.
-  zbbVideo: "e4ujS1er1r0",
-  zbbStart: 82,
+  // the birthday song video (plays muted in the background as soon as the page opens; sound comes on at the tap)
+  bdayVideo: "media/birthday.mp4",
+  // Zac Brown Band — Chicken Fried, layered under the birthday song from Chapter III on
+  zbbSong: "media/chicken-fried.mp3",
+  mix: { bday: 0.8, bdayWithZbb: 0.55, zbb: 0.5 }, // volumes (0–1)
   actOne: { num: "CHAPTER I", title: "The Wild Side" },
   actTwo: { num: "CHAPTER II", title: "The Squad" },
   actThree: { num: "CHAPTER III", title: "Zac Brown Band" },
   photosActOne: [
-    { src: "img/outward-bound.jpg", cap: "summit snack, 7:59am 🏔️", sticker: "⛑️", tall: true },
-    { src: "img/trail-nap.jpg",     cap: "pro-level trail napper",   sticker: "😴", tall: true },
-    { src: "img/canyon.jpg",        cap: "canyon girl summer",       sticker: "🏜️" },
-    { src: "img/raft-crew.jpg",     cap: "river crew, no notes",     sticker: "🛶" },
-    { src: "img/raft-paddles.jpg",  cap: "paddles UP",               sticker: "⚔️" },
+    { src: "img/outward-bound.jpg", sticker: "⛑️", tall: true },
+    { src: "img/trail-nap.jpg",     sticker: "😴", tall: true },
+    { src: "img/canyon.jpg",        sticker: "🏜️" },
+    { src: "img/raft-crew.jpg",     sticker: "🛶" },
+    { src: "img/raft-paddles.jpg",  sticker: "⚔️" },
   ],
   photosActTwo: [
-    { src: "img/lego-batman.jpg",   cap: "certified Lego engineer",  sticker: "🦇" },
-    { src: "img/brick-wall.jpg",    cap: "main character energy",    sticker: "✨" },
-    { src: "img/diner-crew.jpg",    cap: "late-night diner council", sticker: "🍳" },
+    { src: "img/lego-batman.jpg",   sticker: "🦇" },
+    { src: "img/brick-wall.jpg",    sticker: "✨" },
+    { src: "img/diner-crew.jpg",    sticker: "🍳" },
   ],
-  concertCaption: "Zac Brown Band night 🤠🇺🇸",
-  // Photos shown on the Zac Brown Band ticket (they cross-fade if there's more than one)
-  concertPhotos: ["img/stameys.jpg", "img/zbb-concert.jpg"], // pre-show Stamey's, then the show
-  // Real Cherokee nature photos for the backdrop (slow zoom + cross-fade). When this list is empty
-  // or the photos fail to load, the illustrated scene is shown instead.
+  // Photos shown on the Zac Brown Band ticket (they cross-fade): pre-show Stamey's, then the show
+  concertPhotos: ["img/stameys.jpg", "img/zbb-concert.jpg"],
+  // Real Cherokee nature photos for the backdrop (optional; empty = the illustrated scene)
   naturePhotos: [],
-  signoff: "— from Yusuf 💙",
-  creditsLine: "This is where all my AI credits go to",
-  tickerText: "HAPPY 20TH BIRTHDAY PAYTYN  ★  LIVE FROM THE GREAT SMOKY MOUNTAINS  ★  MAY THE ODDS BE EVER IN YOUR FAVOR  ★  ALL IN ON PAYTYN ♠  ★  EST. NOV 3, 2006  ★  GOTHAM'S FINEST LEGO ENGINEER  ★  ",
+  message: "Hope you have an AWESOME year ahead! Still crazy how we ended up meeting, and I'm so grateful we did.",
+  creditsLine: "And yes, this is where all my AI credits go 😂😂",
+  signoff: "— Yusuf 💙",
+  tickerText: "HAPPY BIRTHDAY PAYTYN  ★  LIVE FROM CHEROKEE, N.C.  ★  MAY THE ODDS BE EVER IN YOUR FAVOR  ★  ALL IN ON PAYTYN ♠  ★  ",
 };
 
 const $ = (s) => document.querySelector(s);
@@ -45,94 +42,70 @@ const rand = (a, b) => a + Math.random() * (b - a);
   $(".ticker-track").textContent = CONFIG.tickerText.repeat(6);
 })();
 
-/* ------------------------------------------------------------------ MUSIC (YouTube) */
-const Music = {
-  player: null, ready: false, wantPlay: false, onZbb: false, fadeTimer: 0,
+/* ------------------------------------------------------------------ MUSIC: birthday video + Chicken Fried, mixed with Web Audio
+   (iPhones ignore element.volume, so volumes go through gain nodes) */
+const Mix = {
+  vid: document.getElementById("bgvid"),
+  song: new Audio(CONFIG.zbbSong),
+  ctx: null, gB: null, gZ: null, onZbb: false,
   init() {
-    window.onYouTubeIframeAPIReady = () => {
-      this.player = new YT.Player("yt", {
-        videoId: CONFIG.bdayVideo,
-        playerVars: { playsinline: 1, controls: 0, rel: 0, modestbranding: 1, disablekb: 1, fs: 0, iv_load_policy: 3, start: CONFIG.bdayStart, origin: location.origin },
-        events: {
-          onReady: () => { this.ready = true; if (this.wantPlay) this.play(); },
-          onStateChange: (e) => { if (e.data === 1) $("#soundPill").style.display = "none"; },
-        },
-      });
-    };
-    const s = document.createElement("script");
-    s.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(s);
+    this.vid.src = CONFIG.bdayVideo;
+    this.song.preload = "auto";
+    const tryPlay = () => this.vid.play().catch(() => {});
+    tryPlay();
+    document.addEventListener("visibilitychange", () => { if (!document.hidden && this.vid.paused) tryPlay(); });
   },
-  play() {
-    this.wantPlay = true;
-    if (!this.ready) return;
-    try { this.player.unMute(); this.player.setVolume(100); this.player.playVideo(); } catch (e) {}
-  },
-  // If the browser blocked sound, show a pill the viewer can tap.
-  check() {
+  // called inside the first tap: sound on, birthday song from the top, Chicken Fried unlocked but silent
+  start() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new AC();
+      const sB = this.ctx.createMediaElementSource(this.vid), sZ = this.ctx.createMediaElementSource(this.song);
+      this.gB = this.ctx.createGain(); this.gZ = this.ctx.createGain();
+      this.gB.gain.value = CONFIG.mix.bday; this.gZ.gain.value = 0;
+      sB.connect(this.gB).connect(this.ctx.destination);
+      sZ.connect(this.gZ).connect(this.ctx.destination);
+      this.ctx.resume();
+    } catch (e) { this.ctx = null; this.vid.volume = CONFIG.mix.bday; }
+    this.vid.muted = false; this.vid.loop = true;
+    this.vid.currentTime = 0;
+    this.vid.play().catch(() => {});
+    this.song.play().then(() => { if (!this.onZbb) { this.song.pause(); this.song.currentTime = 0; } }).catch(() => {});
     setTimeout(() => {
-      let ok = false;
-      try { ok = this.ready && this.player.getPlayerState() === 1 && !this.player.isMuted(); } catch (e) {}
-      if (!ok) $("#soundPill").style.display = "block";
-    }, 3000);
+      const bad = this.vid.paused || (this.ctx && this.ctx.state !== "running");
+      if (bad) $("#soundPill").style.display = "block";
+    }, 2500);
   },
-  fade(from, to, ms, done) {
-    clearInterval(this.fadeTimer);
-    const t0 = performance.now();
-    this.fadeTimer = setInterval(() => {
-      const k = Math.min(1, (performance.now() - t0) / ms);
-      try { this.player && this.player.setVolume(Math.round(from + (to - from) * k)); } catch (e) {}
-      if (k >= 1) { clearInterval(this.fadeTimer); done && done(); }
-    }, 50);
+  fade(which, to, secs) {
+    if (this.ctx) {
+      const g = which === "bday" ? this.gB : this.gZ, now = this.ctx.currentTime;
+      g.gain.cancelScheduledValues(now); g.gain.setValueAtTime(g.gain.value, now); g.gain.linearRampToValueAtTime(to, now + secs);
+    } else {
+      gsap.to(which === "bday" ? this.vid : this.song, { volume: to, duration: secs });
+    }
   },
   toZbb() {
     if (this.onZbb) return;
     this.onZbb = true;
-    if (!this.ready) return;
-    this.fade(100, 0, 900, () => {
-      try {
-        this.player.loadVideoById({ videoId: CONFIG.zbbVideo, startSeconds: CONFIG.zbbStart });
-        this.player.unMute();
-        this.fade(0, 100, 1800);
-      } catch (e) {}
-    });
+    if (!this.ctx) this.song.volume = 0;
+    this.song.currentTime = 0;
+    this.song.play().catch(() => {});
+    this.fade("zbb", CONFIG.mix.zbb, 2.5);
+    this.fade("bday", CONFIG.mix.bdayWithZbb, 2.5);
   },
   restart() {
     this.onZbb = false;
-    if (!this.ready) return;
-    try { this.player.loadVideoById({ videoId: CONFIG.bdayVideo, startSeconds: CONFIG.bdayStart }); this.player.unMute(); this.player.setVolume(100); } catch (e) {}
+    this.song.pause(); this.song.currentTime = 0;
+    this.fade("zbb", 0, 0.3); this.fade("bday", CONFIG.mix.bday, 0.3);
+    this.vid.currentTime = 0; this.vid.play().catch(() => {});
   },
-  duck(on) { try { this.player && this.player.setVolume(on ? 30 : 100); } catch (e) {} },
-};
-Music.init();
-
-/* ------------------------------------------------------------------ VOICE-OVERS
-   Drop ElevenLabs mp3s into /audio with these names and they play automatically.
-   If a file is missing we skip it (or use the phone's built-in voice for the last line). */
-const VO = {
-  files: { intro: "audio/vo-intro.mp3", zbb: "audio/vo-zbb.mp3", credits: "audio/vo-credits.mp3" },
-  have: {},
-  el: new Audio(),
-  init() {
-    for (const [k, f] of Object.entries(this.files))
-      fetch(f, { method: "HEAD" }).then((r) => { this.have[k] = r.ok; }).catch(() => {});
-  },
-  unlock() { // called inside the first tap so iOS lets us play later
-    try { this.el.muted = true; this.el.src = this.files.intro; const p = this.el.play(); p && p.then(() => { this.el.pause(); this.el.muted = false; }).catch(() => { this.el.muted = false; }); } catch (e) {}
-  },
-  play(k, fallbackText) {
-    if (this.have[k]) {
-      try {
-        this.el.muted = false; this.el.src = this.files[k]; this.el.currentTime = 0;
-        Music.duck(true); this.el.onended = () => Music.duck(false);
-        this.el.play().catch(() => Music.duck(false));
-        return;
-      } catch (e) {}
-    }
-    if (fallbackText) speak(fallbackText);
+  resume() {
+    try { this.ctx && this.ctx.resume(); } catch (e) {}
+    this.vid.muted = false; this.vid.play().catch(() => {});
+    if (this.onZbb) this.song.play().catch(() => {});
   },
 };
-VO.init();
+Mix.init();
 
 /* ------------------------------------------------------------------ CONFETTI HELPERS */
 const pop = (opts) => { try { confetti(Object.assign({ disableForReducedMotion: true, zIndex: 90 }, opts)); } catch (e) {} };
@@ -156,7 +129,7 @@ function rainChips(n = 26) {
 }
 
 /* ------------------------------------------------------------------ BUILD PHOTOS */
-const allPhotos = [...CONFIG.photosActOne, ...CONFIG.photosActTwo, ...CONFIG.concertPhotos.map((src) => ({ src, cap: CONFIG.concertCaption, sticker: "🤠" }))];
+const allPhotos = [...CONFIG.photosActOne, ...CONFIG.photosActTwo, ...CONFIG.concertPhotos.map((src) => ({ src }))];
 
 /* ------------------------------------------------------------------ NATURE PHOTO BACKDROP */
 (() => {
@@ -185,13 +158,15 @@ const allPhotos = [...CONFIG.photosActOne, ...CONFIG.photosActTwo, ...CONFIG.con
     if (imgs.length > 1) setInterval(() => { i = (i + 1) % imgs.length; if (imgs[i].complete && imgs[i].naturalWidth) show(i); }, 9000);
   }, { once: true });
 })();
+$("#message").textContent = CONFIG.message;
+$("#credits").textContent = CONFIG.creditsLine;
 $(".t-photo").innerHTML = CONFIG.concertPhotos.map((src) => `<img src="${src}" alt="">`).join("");
 const concertImgs = [...document.querySelectorAll(".t-photo img")];
-$("#signoff").textContent = CONFIG.signoff;
+$("#signoff span").textContent = CONFIG.signoff;
 function makePolaroid(p) {
   const el = document.createElement("figure");
   el.className = "polaroid" + (p.tall ? " tall" : "");
-  el.innerHTML = `<div class="tape"></div><div class="frame"><img src="${p.src}" alt=""></div><figcaption class="cap">${p.cap}</figcaption><span class="sticker">${p.sticker}</span>`;
+  el.innerHTML = `<div class="tape"></div><div class="frame"><img src="${p.src}" alt=""></div><span class="sticker">${p.sticker}</span>`;
   $("#photos").appendChild(el);
   return el;
 }
@@ -203,6 +178,8 @@ gsap.set(".polaroid", { xPercent: -50, yPercent: -50 });
 const STEP = 2.9; // seconds each photo gets the spotlight
 let tl;
 gsap.set(["#ticker", ".balloons", "#dim"], { opacity: 0 });
+// the birthday video starts out filling the background, faintly, behind the intro
+gsap.set("#screen", { ...screenBoxes().cover, opacity: 0.22 });
 function setAct(a) { $("#actnum").textContent = a.num; $("#acttitle").textContent = a.title; }
 
 /* ---------- poker chips: tossed like a dealer's flourish */
@@ -302,12 +279,10 @@ function buildShow() {
   tl.from(".hbi-name .l", { opacity: 0, scale: 0, rotation: () => rand(-60, 60), stagger: 0.08, duration: 0.6, ease: "back.out(3)" }, t + 0.9);
   tl.fromTo("#hbiChip", { y: -innerHeight * 0.6, rotation: -540, opacity: 1 }, { y: 0, rotation: 0, duration: 1.1, ease: "bounce.out" }, t + 1.4);
   tl.call(() => bigBurst(), null, t + 1.6);
-  tl.call(() => VO.play("intro"), null, t + 0.6);
   tl.fromTo(".balloons", { opacity: 0 }, { opacity: 1, duration: 1.5 }, t + 1);
   tl.to(["#ticker", "#skip"], { opacity: 1, pointerEvents: "auto", duration: 0.6 }, t + 2);
-  // the birthday video appears under the title...
-  tl.set("#screen", box.card, t + 2.2);
-  tl.fromTo("#screen", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.7, ease: "back.out(1.6)" }, t + 2.2);
+  // the background video comes forward as a card under the title...
+  tl.to("#screen", { ...box.card, opacity: 1, duration: 1.1, ease: "power3.inOut" }, t + 2);
   // ...then grows to fill the background and fades out behind the pics (song keeps playing)
   t += 8;
   tl.to("#hbIntro", { autoAlpha: 0, y: -40, duration: 0.6 }, t);
@@ -321,13 +296,12 @@ function buildShow() {
 
   // --- CHAPTER III: Zac Brown Band
   tl.addLabel("zbb", t);
-  tl.call(() => Music.toZbb(), null, t);
-  tl.call(() => VO.play("zbb"), null, t + 1.2);
+  tl.call(() => Mix.toZbb(), null, t - 1.5);
   t = actCard(tl, CONFIG.actThree, t);
   tl.to(".beam", { opacity: 1, duration: 0.8 }, t - 0.6);
   tl.to(".beam.b1", { rotation: 10, duration: 2.2, yoyo: true, repeat: 3, ease: "sine.inOut" }, t - 0.6);
   tl.to(".beam.b2", { rotation: -10, duration: 2.2, yoyo: true, repeat: 3, ease: "sine.inOut" }, t - 0.6);
-  tl.to("#screen", { opacity: 0.3, duration: 1 }, t);
+  tl.to("#screen", { opacity: 0.16, duration: 1 }, t);
   tl.fromTo("#concert", { opacity: 0, scale: 0.5, rotation: -8 }, { opacity: 1, scale: 1, rotation: -2, duration: 1, ease: "back.out(1.6)" }, t);
   tl.call(() => bigBurst(flagColors), null, t + 0.6);
   const zbbLen = Math.max(8, 1.6 + concertImgs.length * 2.8);
@@ -354,8 +328,8 @@ function buildShow() {
   tl.from(".hb-name .l", { scale: 0, rotation: () => rand(-90, 90), opacity: 0, stagger: 0.09, duration: 0.6, ease: "back.out(3)" }, t + 0.6);
   tl.call(() => bigBurst(), null, t + 1.2);
   tl.from("#cake", { y: 120, opacity: 0, duration: 0.8, ease: "back.out(1.4)" }, t + 1.4);
-  tl.from(".wish", { opacity: 0, duration: 0.5 }, t + 2.1);
-  tl.call(() => showCredits(), null, t + 8);
+  tl.call(() => blowCandles(), null, t + 4.2);
+  tl.call(() => showCredits(), null, t + 5.4);
   return tl;
 }
 
@@ -363,31 +337,28 @@ function buildShow() {
 $(".hb-name").innerHTML = [..."Paytyn"].map((c) => `<span class="l">${c}</span>`).join("");
 $(".hbi-name").innerHTML = [..."Paytyn"].map((c) => `<span class="l">${c}</span>`).join("");
 
+// candles go out one by one with a little smoke
+let blown = false;
+function blowCandles() {
+  if (blown) return;
+  blown = true;
+  document.querySelectorAll("#cake .candle").forEach((c, i) => setTimeout(() => {
+    c.classList.add("out");
+    const smoke = document.createElement("i"); smoke.className = "smoke"; c.appendChild(smoke);
+    gsap.fromTo(smoke, { opacity: 0.7, y: 0, scale: 0.6 }, { opacity: 0, y: -40, scale: 1.8, duration: 1.6, ease: "power1.out", onComplete: () => smoke.remove() });
+  }, i * 110));
+  setTimeout(() => bigBurst(), 500);
+}
+
 let creditsShown = false;
 function showCredits() {
   if (creditsShown) return;
   creditsShown = true;
-  $("#credits").firstChild.textContent = CONFIG.creditsLine + " ";
-  gsap.fromTo("#credits", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8 });
-  gsap.to("#credits span", { rotation: 360, repeat: -1, duration: 1.6, ease: "none", delay: 0.6 });
-  gsap.to("#odds", { opacity: 1, duration: 0.8, delay: 1.0 });
-  gsap.to("#signoff", { opacity: 1, duration: 0.8, delay: 1.6 });
-  gsap.to(".end-btns", { opacity: 1, pointerEvents: "auto", duration: 0.6, delay: 2.2 });
-  rainChips();
-  chipBurst(0.5, 0.95, 16, 48);
-  VO.play("credits", "Happy twentieth birthday, Paytyn! From Yusuf. And yes... " + CONFIG.creditsLine.replace("AI", "A.I."));
-}
-
-function speak(text) {
-  try {
-    if (!("speechSynthesis" in window)) return;
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = 1; u.pitch = 1.05;
-    Music.duck(true);
-    u.onend = () => Music.duck(false);
-    speechSynthesis.cancel(); speechSynthesis.speak(u);
-    setTimeout(() => Music.duck(false), 6000);
-  } catch (e) {}
+  gsap.fromTo("#message", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9 });
+  gsap.fromTo("#credits", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.8, delay: 2.2 });
+  gsap.to("#signoff", { opacity: 1, duration: 0.8, delay: 3.2 });
+  gsap.to(".end-btns", { opacity: 1, pointerEvents: "auto", duration: 0.6, delay: 4 });
+  setTimeout(() => { rainChips(); chipBurst(0.5, 0.95, 16, 48); }, 2300);
 }
 
 /* ------------------------------------------------------------------ INTERACTIONS */
@@ -395,44 +366,24 @@ let started = false;
 $("#startBtn").addEventListener("click", () => {
   if (started) return;
   started = true;
-  Music.play();
-  Music.check();
-  VO.unlock();
-  // unlock speech on iOS while we still have the tap
-  try { speechSynthesis.speak(new SpeechSynthesisUtterance("")); } catch (e) {}
+  Mix.start();
   $("#startBtn").style.animation = "none";
   buildShow().play(0);
 });
 
-$("#soundPill").addEventListener("click", () => {
-  if (Music.onZbb && Music.ready) { try { Music.player.loadVideoById({ videoId: CONFIG.zbbVideo, startSeconds: CONFIG.zbbStart }); } catch (e) {} }
-  Music.play();
-  $("#soundPill").style.display = "none";
-});
+$("#soundPill").addEventListener("click", () => { Mix.resume(); $("#soundPill").style.display = "none"; });
 
-$("#skip").addEventListener("click", () => {
-  Music.toZbb();
-  tl.seek("finale");
-});
+$("#skip").addEventListener("click", () => { Mix.toZbb(); tl.seek("finale"); });
 
-$("#cake").addEventListener("click", () => {
-  const cake = $("#cake");
-  if (cake.classList.contains("out")) { cake.classList.remove("out"); $("#wish").textContent = "relit! blow again 🕯️"; return; }
-  cake.classList.add("out");
-  $("#wish").textContent = "wish granted ✨ happy 20th!";
-  bigBurst();
-  setTimeout(showCredits, 900);
-});
+$("#cake").addEventListener("click", blowCandles);
 
 $("#replay").addEventListener("click", () => {
-  creditsShown = false;
-  gsap.killTweensOf("#credits span");
-  gsap.set(["#credits", "#signoff", "#odds"], { opacity: 0 });
+  creditsShown = false; blown = false;
+  gsap.set(["#message", "#credits", "#signoff"], { opacity: 0 });
   gsap.set(".end-btns", { opacity: 0, pointerEvents: "none" });
-  $("#cake").classList.remove("out");
-  $("#wish").textContent = "tap the candles & make a wish ✨";
+  document.querySelectorAll("#cake .candle").forEach((c) => c.classList.remove("out"));
   $("#tapText").textContent = "tap the chip to start";
-  Music.restart();
+  Mix.restart();
   tl.restart();
 });
 
@@ -448,8 +399,8 @@ $("#theatre").addEventListener("pointerdown", (e) => {
   allPhotos.forEach((p) => {
     const b = document.createElement("button");
     b.style.setProperty("--r", rand(-4, 4).toFixed(1) + "deg");
-    b.innerHTML = `<img src="${p.src}" alt="" loading="lazy"><span>${p.cap}</span>`;
-    b.onclick = () => { const lb = $("#lightbox"); lb.querySelector("img").src = p.src; lb.querySelector("p").textContent = p.cap; lb.hidden = false; };
+    b.innerHTML = `<img src="${p.src}" alt="" loading="lazy">`;
+    b.onclick = () => { const lb = $("#lightbox"); lb.querySelector("img").src = p.src; lb.hidden = false; };
     grid.appendChild(b);
   });
   $("#wallBtn").onclick = () => { $("#wall").hidden = false; };
