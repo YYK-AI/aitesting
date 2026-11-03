@@ -13,7 +13,7 @@
   --paper:#fffaf0;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--ink);color:#fff;overflow:hidden;
+html,body{height:100%;background:#1c0a10;color:#fff;overflow:hidden;
   -webkit-tap-highlight-color:transparent;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
 body{position:fixed;inset:0}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
@@ -29,13 +29,17 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   text-shadow:2px 2px 0 rgba(0,0,0,.35)}
 
 /* ---------------------------------------------------------- INTRO */
-#intro{position:fixed;inset:0;z-index:100;background:#120b2e;overflow:hidden}
+#world{position:fixed;inset:0;z-index:0;transform-origin:50% 45%;background:#141a40}
+#intro{position:fixed;inset:0;z-index:100;overflow:hidden}
 #pix{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
-.intro-ui{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+.intro-ui{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:max(7vh,env(safe-area-inset-top)) !important;
   gap:clamp(8px,2.2vh,20px);padding:max(16px,env(safe-area-inset-top)) 16px 16px;text-align:center;
   font-family:"PressStart",monospace;padding-bottom:18vh}
-.road-sign{background:#1f6b45;border:4px solid #fff;outline:4px solid #1f6b45;padding:8px 14px;
-  box-shadow:6px 6px 0 rgba(0,0,0,.45);display:flex;flex-direction:column;gap:6px;line-height:1.2}
+.road-sign{position:relative;color:#ffecc8;padding:8px 16px;display:flex;flex-direction:column;gap:6px;line-height:1.2;
+  background:repeating-linear-gradient(0deg,#7a4b26 0 4px,#6b3f1f 4px 6px,#83532b 6px 10px);
+  border:4px solid #3b2412;box-shadow:inset 0 0 0 2px #a8713d,6px 6px 0 rgba(0,0,0,.45);text-shadow:2px 2px 0 #2a160a}
+.road-sign::before,.road-sign::after{content:"";position:absolute;top:100%;width:8px;height:16px;background:#3b2412}
+.road-sign::before{left:18%}.road-sign::after{right:18%}
 .road-sign small{font-size:clamp(7px,2vw,10px);letter-spacing:.1em}
 .road-sign b{font-size:clamp(14px,4.6vw,24px);font-weight:400;letter-spacing:.06em}
 .pix-title{display:flex;flex-direction:column;gap:10px;font-weight:400;line-height:1.1}
@@ -49,12 +53,10 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 @keyframes blink{to{visibility:hidden}}
 
 /* ---------------------------------------------------------- THEATRE */
-#theatre{position:fixed;inset:0;overflow:hidden;background:radial-gradient(120% 90% at 50% 40%,#2a1747 0%,#120b2e 60%,#07040f 100%)}
-.backdrop{position:absolute;inset:0}
-.stars{position:absolute;left:0;top:0;width:2px;height:2px;border-radius:50%;background:transparent}
-.moon{position:absolute;right:14%;top:17%;width:clamp(30px,8vmin,60px);aspect-ratio:1;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,#fffbe6,#f2e3a6 60%,#d8c27a);box-shadow:0 0 40px rgba(255,240,180,.45)}
-.smokies{position:absolute;left:0;right:0;bottom:12vh;width:100%;height:46vh}
+#theatre{position:fixed;inset:0;z-index:1;overflow:hidden}
+#frame{position:absolute;inset:0;z-index:40;transform-origin:50% 45%;pointer-events:none}
+.proscenium{position:absolute;left:8%;right:8%;top:7.2%;bottom:8.8%;border:4px solid #c4943a;border-radius:4px;
+  box-shadow:0 0 0 100vmax #1c0a10,0 0 0 10px #2a1016,inset 0 0 40px rgba(0,0,0,.55),0 0 30px rgba(255,190,90,.35)}
 
 .balloons i{position:absolute;bottom:-20vh;left:var(--x);width:clamp(30px,9vmin,54px);aspect-ratio:.82;border-radius:50% 50% 48% 48%/55% 55% 45% 45%;
   background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.75) 0 8%,transparent 20%),hsl(var(--h) 85% 58%);
@@ -68,7 +70,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .beam.b1{left:-14vmax;transform:rotate(-24deg)}
 .beam.b2{right:-14vmax;transform:rotate(24deg);background:linear-gradient(180deg,rgba(140,190,255,.55),rgba(140,190,255,0) 85%)}
 
-#screen{position:absolute;left:50%;top:47%;width:min(92vw,980px,132vh);aspect-ratio:16/9;transform:translate(-50%,-50%);
+#screen{position:absolute;left:50%;top:47%;width:min(84vw,980px,120vh);aspect-ratio:16/9;
   background:#000;border:3px solid #2b2140;box-shadow:0 0 0 8px #0d0818,0 0 60px rgba(255,255,255,.18);z-index:10;overflow:hidden}
 .screen-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
   font-family:"Rye",serif;color:var(--gold);font-size:clamp(14px,4.5vw,36px);text-align:center;
@@ -105,7 +107,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .marquee small{display:block;font-size:clamp(8px,2.3vw,12px);letter-spacing:.2em;color:#ffe9c4;margin-top:3px}
 @keyframes bulbs{50%{border-color:#ff8a3d}}
 
-.floor{position:absolute;left:0;right:0;bottom:0;height:13vh;z-index:30;
+.floor{position:absolute;left:0;right:0;bottom:0;height:9.5vh;z-index:30;
   background:linear-gradient(180deg,rgba(255,200,120,.35),transparent 30%),
     repeating-linear-gradient(90deg,#5a3418 0 46px,#6b4220 46px 92px,#4d2c14 92px 140px);
   box-shadow:0 -6px 0 #2a170a, 0 -20px 40px rgba(255,190,90,.25)}
@@ -240,7 +242,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
   .polaroid .sticker{font-size:9vh}
   #screen{top:52%;width:min(70vw,120vh)}
   #nowshowing{display:none}
-  .floor{height:11vh}
+  .floor{height:9.5vh}
   .ticker{padding:4px 0;font-size:2.4vh}
   #skip{bottom:calc(6vh + 14px)}
 

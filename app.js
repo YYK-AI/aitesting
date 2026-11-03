@@ -37,203 +37,9 @@ const CONFIG = {
 const $ = (s) => document.querySelector(s);
 const rand = (a, b) => a + Math.random() * (b - a);
 
-/* ------------------------------------------------------------------ PIXEL CHEROKEE */
-const Pixel = (() => {
-  const cv = $("#pix"), g = cv.getContext("2d");
-  let W, H, ridges = [], stars = [], flies = [], trees = [], clouds = [], raf = 0, last = 0, rTop, rBot;
-  let seed = 11;
-  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  const SKY = ["#120b2e", "#1b1140", "#271651", "#3a1c5e", "#552466", "#76306b", "#9b3d6b", "#c24f63", "#e2705a", "#f59a5c"];
-  const LAYERS = [
-    { b: 0.50, a: 0.12, c: "#8a7fc4", haze: "rgba(230,190,230,.22)" },
-    { b: 0.58, a: 0.11, c: "#615aa0", haze: "rgba(200,170,230,.18)" },
-    { b: 0.66, a: 0.09, c: "#403c7a", haze: "rgba(170,150,220,.14)" },
-    { b: 0.74, a: 0.07, c: "#272552", haze: null },
-  ];
-  const ELK = [
-    "#..#.....",
-    ".#.#.....",
-    "..##.....",
-    "..###....",
-    "...######",
-    "...######",
-    "...#.#..#",
-    "...#.#..#",
-  ];
-
-  function resize() {
-    const P = Math.max(3, Math.round(Math.min(innerWidth, innerHeight) / 95));
-    W = Math.ceil(innerWidth / P); H = Math.ceil(innerHeight / P);
-    cv.width = W; cv.height = H;
-    seed = 11;
-    rTop = Math.round(H * 0.82); rBot = Math.round(H * 0.88);
-    ridges = LAYERS.map((L) => {
-      const p1 = rnd() * 6, p2 = rnd() * 6, p3 = rnd() * 6, ys = [];
-      for (let x = 0; x < W; x++) {
-        const u = (x / W) * 120;
-        const n = 0.55 * Math.sin(u * 0.055 + p1) + 0.3 * Math.sin(u * 0.14 + p2) + 0.15 * Math.sin(u * 0.41 + p3);
-        ys.push(Math.round(H * L.b - H * L.a * (0.55 + 0.5 * n)));
-      }
-      return ys;
-    });
-    stars = Array.from({ length: Math.round(W * H / 90) }, () => ({ x: rnd() * W | 0, y: rnd() * H * 0.5 | 0, p: rnd() * 6, s: 0.5 + rnd() * 2 }));
-    flies = Array.from({ length: 22 }, () => ({ x: rnd() * W, y: H * (0.7 + rnd() * 0.28), vx: rnd() - 0.5, vy: rnd() - 0.5, p: rnd() * 6 }));
-    trees = [];
-    for (let x = 1; x < W; x += 2 + (rnd() * 4 | 0)) {
-      if (x > W * 0.58 && x < W * 0.94) continue; // leave room for the casino
-      trees.push({ x, h: 4 + (rnd() * 6 | 0) });
-    }
-    clouds = Array.from({ length: 4 }, () => ({ x: rnd() * W, y: H * (0.12 + rnd() * 0.25), w: 10 + rnd() * 16, v: 0.6 + rnd() }));
-  }
-
-  function circle(cx, cy, r, color) {
-    g.fillStyle = color;
-    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++)
-      if (dx * dx + dy * dy <= r * r + r * 0.6) g.fillRect(cx + dx, cy + dy, 1, 1);
-  }
-  function chip(cx, cy, r, color) {
-    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
-      const d = Math.sqrt(dx * dx + dy * dy);
-      if (d > r + 0.3) continue;
-      const a = Math.atan2(dy, dx) + Math.PI;
-      let c = color;
-      if (d > r - 1.5 && Math.floor(a / (Math.PI / 4)) % 2 === 0) c = "#fff";
-      else if (r >= 4 && d > r * 0.48 && d < r * 0.68) c = "#fff";
-      g.fillStyle = c; g.fillRect(cx + dx, cy + dy, 1, 1);
-    }
-  }
-
-  function draw(t) {
-    // sky in stepped (dithered) bands
-    const horizon = H * 0.75, bh = horizon / SKY.length;
-    for (let i = 0; i < SKY.length; i++) {
-      g.fillStyle = SKY[i];
-      g.fillRect(0, Math.floor(i * bh), W, Math.ceil(bh) + 1);
-      if (i < SKY.length - 1) { // checker dither on the seam
-        g.fillStyle = SKY[i + 1];
-        const y = Math.floor((i + 1) * bh) - 1;
-        for (let x = (i % 2); x < W; x += 2) g.fillRect(x, y, 1, 1);
-      }
-    }
-    g.fillStyle = SKY[SKY.length - 1]; g.fillRect(0, horizon, W, H - horizon);
-
-    // stars
-    for (const s of stars) {
-      const a = (Math.sin(t / 400 * s.s + s.p) + 1) / 2;
-      if (a < 0.25) continue;
-      g.fillStyle = `rgba(255,248,220,${a})`; g.fillRect(s.x, s.y, 1, 1);
-    }
-    // moon
-    const mr = Math.max(3, Math.round(W / 26));
-    circle(Math.round(W * 0.2), Math.round(H * 0.12), mr, "#fff3c9");
-    g.fillStyle = "#e8d79c"; g.fillRect(Math.round(W * 0.2) - 1, Math.round(H * 0.12), 2, 1); g.fillRect(Math.round(W * 0.2) + 1, Math.round(H * 0.12) - 2, 1, 1);
-
-    // clouds
-    for (const c of clouds) {
-      const x = ((c.x + t / 1000 * c.v) % (W + 40)) - 20;
-      g.fillStyle = "rgba(255,170,190,.45)";
-      g.fillRect(x | 0, c.y | 0, c.w | 0, 2);
-      g.fillRect((x + 3) | 0, (c.y - 1) | 0, (c.w - 6) | 0, 1);
-      g.fillRect((x + c.w * 0.3) | 0, (c.y - 2) | 0, (c.w * 0.3) | 0, 1);
-    }
-
-    // Smoky Mountain ridges with haze between them
-    ridges.forEach((ys, i) => {
-      g.fillStyle = LAYERS[i].c;
-      for (let x = 0; x < W; x++) g.fillRect(x, ys[x], 1, rTop - ys[x] + 1);
-      if (LAYERS[i].haze) { g.fillStyle = LAYERS[i].haze; g.fillRect(0, Math.round(H * (LAYERS[i].b - 0.02)), W, Math.round(H * 0.05)); }
-    });
-    // pines on the near ridge
-    g.fillStyle = "#161a38";
-    const near = ridges[3];
-    for (const tr of trees) {
-      const base = near[tr.x] + 3;
-      for (let k = 0; k < tr.h; k++) {
-        const w = Math.floor((k / tr.h) * 3);
-        g.fillRect(tr.x - w, base - tr.h + k, w * 2 + 1, 1);
-      }
-    }
-
-    // casino on the far bank
-    const cx0 = Math.round(W * 0.62), cx1 = Math.round(W * 0.92), cw = cx1 - cx0, ch = Math.round(H * 0.15), cy0 = rTop - ch;
-    g.fillStyle = "#2a1840"; g.fillRect(cx0, cy0, cw, ch);
-    g.fillStyle = "#3d2459"; g.fillRect(cx0, cy0, cw, 1);
-    g.fillStyle = "#22133a"; g.fillRect(cx0 + Math.round(cw * 0.15), cy0 - Math.round(ch * 0.35), Math.round(cw * 0.7), Math.round(ch * 0.35));
-    const flick = Math.floor(t / 450);
-    for (let y = cy0 + 2; y < rTop - 2; y += 3) for (let x = cx0 + 2; x < cx1 - 2; x += 3) {
-      const h = Math.sin(x * 12.9898 + y * 78.233 + flick * 3.1) * 43758.5453;
-      g.fillStyle = (h - Math.floor(h)) > 0.3 ? "#ffd36b" : "#4b2e6b";
-      g.fillRect(x, y, 1, 1);
-    }
-    // marquee sign with chasing bulbs
-    const sx0 = cx0 - 2, sx1 = cx1 + 2, sy0 = cy0 - Math.round(ch * 0.35) - 9, sy1 = sy0 + 8;
-    g.fillStyle = "#12061e"; g.fillRect(sx0, sy0, sx1 - sx0, sy1 - sy0);
-    let i = 0;
-    const tick = Math.floor(t / 180);
-    const bulb = (x, y) => { g.fillStyle = (i++ + tick) % 3 === 0 ? "#ff4d6d" : "#ffd36b"; g.fillRect(x, y, 1, 1); };
-    for (let x = sx0; x < sx1; x += 2) { bulb(x, sy0); bulb(x, sy1 - 1); }
-    for (let y = sy0 + 2; y < sy1 - 1; y += 2) { bulb(sx0, y); bulb(sx1 - 1, y); }
-    const midX = Math.round((sx0 + sx1) / 2);
-    chip(midX - 7, sy0 + 4, 2, "#d62839"); chip(midX, sy0 + 4, 2, "#1d4ed8"); chip(midX + 7, sy0 + 4, 2, "#0f8a4b");
-
-    // river (Oconaluftee) with shimmer
-    g.fillStyle = "#2b3f7a"; g.fillRect(0, rTop, W, rBot - rTop);
-    g.fillStyle = "#3d5aa5"; g.fillRect(0, rTop, W, 1);
-    for (let k = 0; k < W / 3; k++) {
-      const x = Math.floor((k * 37 + t / 60 * (1 + (k % 3))) % W), y = rTop + 1 + (k * 7) % Math.max(1, rBot - rTop - 1);
-      g.fillStyle = k % 4 ? "rgba(255,200,170,.55)" : "rgba(255,240,200,.9)";
-      g.fillRect(x, y, 2 + (k % 3), 1);
-    }
-    // casino reflection
-    g.fillStyle = "rgba(255,211,107,.25)";
-    for (let y = rTop + 1; y < rBot; y += 2) g.fillRect(cx0 + ((Math.sin(t / 300 + y) * 2) | 0), y, cw, 1);
-
-    // near bank
-    g.fillStyle = "#14261f"; g.fillRect(0, rBot, W, H - rBot);
-    g.fillStyle = "#1f3a2c";
-    for (let x = 0; x < W; x += 3) g.fillRect(x, rBot - ((x * 7) % 3 === 0 ? 1 : 0), 1, 1);
-
-    // elk silhouette (they roam the Oconaluftee valley)
-    const ex = Math.round(W * 0.42), ey = rBot + 1;
-    g.fillStyle = "#0b1410";
-    ELK.forEach((row, ry) => [...row].forEach((ch2, rx) => { if (ch2 === "#") g.fillRect(ex + rx, ey + ry, 1, 1); }));
-
-    // bouncing poker chips
-    const r = Math.max(3, Math.round(W / 34));
-    [["#d62839", 0.12], ["#1d4ed8", 0.22], ["#0f8a4b", 0.32]].forEach(([col, fx], k) => {
-      const hop = Math.abs(Math.sin(t / 380 + k * 1.1)) * H * 0.045;
-      const x = Math.round(W * fx), y = Math.round(H * 0.95 - r - hop);
-      g.fillStyle = "rgba(0,0,0,.35)"; g.fillRect(x - r + 1, Math.round(H * 0.95), r * 2 - 1, 1);
-      chip(x, y, r, col);
-    });
-
-    // fireflies
-    for (const f of flies) {
-      f.x += f.vx * 0.15; f.y += f.vy * 0.1;
-      if (Math.random() < 0.02) { f.vx = rnd() - 0.5; f.vy = rnd() - 0.5; }
-      if (f.x < 0) f.x = W; if (f.x > W) f.x = 0;
-      if (f.y < H * 0.65 || f.y > H) f.vy *= -1;
-      const a = (Math.sin(t / 250 + f.p) + 1) / 2;
-      g.fillStyle = `rgba(230,255,120,${a})`; g.fillRect(f.x | 0, f.y | 0, 1, 1);
-    }
-  }
-
-  function loop(t) {
-    raf = requestAnimationFrame(loop);
-    if (t - last < 33) return; // ~30fps keeps the retro feel
-    last = t; draw(t);
-  }
-  resize();
-  addEventListener("resize", resize);
-  return { start() { if (!raf) raf = requestAnimationFrame(loop); }, stop() { cancelAnimationFrame(raf); raf = 0; } };
-})();
-Pixel.start();
 
 /* ------------------------------------------------------------------ THEATRE DRESSING */
 (() => {
-  const stars = [];
-  for (let i = 0; i < 90; i++) stars.push(`${rand(0, 100).toFixed(1)}vw ${rand(0, 45).toFixed(1)}vh 0 ${Math.random() < 0.2 ? 1 : 0}px rgba(255,248,220,${rand(0.3, 0.9).toFixed(2)})`);
-  $(".stars").style.boxShadow = stars.join(",");
   $(".ticker-track").textContent = CONFIG.tickerText.repeat(6);
 })();
 
@@ -364,7 +170,11 @@ const actTwoEls = CONFIG.photosActTwo.map(makePolaroid);
 gsap.set(".polaroid", { xPercent: -50, yPercent: -50 });
 
 /* ------------------------------------------------------------------ THE SHOW TIMELINE */
-const STEP = 2.9; // seconds each photo gets the spotlight
+const STEP = 2.9;
+const ZOOM = 0.84; // how far the camera pulls back from Cherokee
+gsap.set("#screen", { xPercent: -50, yPercent: -50, opacity: 0 });
+gsap.set("#frame", { opacity: 0 });
+gsap.set(".balloons", { opacity: 0 }); // seconds each photo gets the spotlight
 let tl;
 function setAct(a) { $("#actnum").textContent = a.num; $("#acttitle").textContent = a.title; }
 
@@ -397,31 +207,36 @@ function actCard(tl, a, t) {
 function buildShow() {
   tl = gsap.timeline({ paused: true });
 
-  // --- INTRO: the chip gets dealt, the pixel world zooms into the theatre
+  // --- INTRO: the chip gets dealt...
   tl.to("#startBtn", { scale: 1.35, rotation: 720, duration: 0.9, ease: "power2.out" }, 0);
   tl.to("#startBtn", { y: -innerHeight, opacity: 0, duration: 0.6, ease: "power2.in" }, 0.9);
   tl.call(() => { $("#pixSub").textContent = "♠ CHEROKEE'S FINEST ♥"; $("#tapText").textContent = "DEALING YOU IN..."; }, null, 0.05);
   tl.call(() => pop({ particleCount: 90, spread: 90, origin: { x: 0.5, y: 0.65 }, colors: ["#d62839", "#ffffff", "#ffd36b", "#1d4ed8"] }), null, 0.4);
-  tl.to(".road-sign", { y: -20, duration: 0.6, yoyo: true, repeat: 3, ease: "sine.inOut" }, 1);
-  tl.to(".intro-ui", { opacity: 0, y: -40, duration: 0.7 }, 3.4);
-  tl.to("#pix", { scale: 3, transformOrigin: "77% 72%", duration: 2, ease: "power2.in" }, 3.3);
-  tl.to("#intro", { autoAlpha: 0, duration: 0.8 }, 4.7);
-  tl.call(() => Pixel.stop(), null, 5.6);
-  tl.call(() => Pixel.start(), null, 0); // so replays bring the pixel world back
+  tl.to(".road-sign", { y: -14, duration: 0.5, yoyo: true, repeat: 1, ease: "sine.inOut" }, 0.8);
+  tl.to(".intro-ui", { opacity: 0, y: -30, duration: 0.7 }, 2);
+  tl.set("#intro", { autoAlpha: 0 }, 2.7);
 
-  // --- CURTAINS UP
-  let t = 5.6;
-  tl.to("#skip", { opacity: 1, pointerEvents: "auto", duration: 0.4 }, t);
-  tl.to(".curtain.left", { xPercent: -86, duration: 1.8, ease: "power3.inOut" }, t);
-  tl.to(".curtain.right", { xPercent: 86, duration: 1.8, ease: "power3.inOut" }, t);
-  tl.call(() => pop({ particleCount: 60, spread: 120, origin: { x: 0.5, y: 0.3 }, colors: partyColors }), null, t + 1.2);
-  tl.fromTo("#nowshowing", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, t + 1.2);
-  tl.call(() => VO.play("intro"), null, t + 0.4);
+  // ...then the camera pulls back and Cherokee becomes the backdrop of the theatre
+  let t = 2.4;
+  tl.to("#world", { scale: ZOOM, duration: 2.8, ease: "power2.inOut" }, t);
+  tl.fromTo("#frame", { scale: 1 / ZOOM, opacity: 0 }, { scale: 1, duration: 2.8, ease: "power2.inOut" }, t);
+  tl.to("#frame", { opacity: 1, duration: 1.2, ease: "power1.in" }, t);
+  tl.fromTo(".curtain.left", { xPercent: -45 }, { xPercent: -86, duration: 2.4, ease: "power3.inOut" }, t + 0.8);
+  tl.fromTo(".curtain.right", { xPercent: 45 }, { xPercent: 86, duration: 2.4, ease: "power3.inOut" }, t + 0.8);
+  tl.fromTo(".balloons", { opacity: 0 }, { opacity: 1, duration: 1.5 }, t + 2);
+  tl.to("#skip", { opacity: 1, pointerEvents: "auto", duration: 0.4 }, t + 2.8);
+  tl.call(() => VO.play("intro"), null, t + 1.6);
 
-  // the birthday video plays full on the screen, then dims to the background
-  t += 5.2;
+  // the movie screen drops in front of the mountains and the birthday video plays
+  t += 2.6;
+  tl.fromTo("#screen", { y: -innerHeight, opacity: 1 }, { y: 0, duration: 1.1, ease: "bounce.out" }, t);
+  tl.call(() => pop({ particleCount: 60, spread: 120, origin: { x: 0.5, y: 0.3 }, colors: partyColors }), null, t + 1);
+  tl.fromTo("#nowshowing", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, t + 1.1);
+
+  // ...then it dims so the pics take the stage (song keeps playing)
+  t += 5.4;
   tl.to("#nowshowing", { opacity: 0, duration: 0.5 }, t);
-  tl.to("#screen", { opacity: 0.2, duration: 1.6 }, t);
+  tl.to("#screen", { opacity: 0.18, duration: 1.6 }, t);
   tl.to(".marquee", { scale: 0.8, transformOrigin: "50% 0", duration: 0.6 }, t);
 
   // --- ACT I
