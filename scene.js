@@ -388,7 +388,7 @@ const Scene = (() => {
   }
 
   function resize() {
-    DPR = Math.min(1.5, window.devicePixelRatio || 1);
+    DPR = innerWidth > 900 ? 1 : Math.min(1.5, window.devicePixelRatio || 1); // big screens: draw at 1x to stay smooth
     W = innerWidth; H = innerHeight; S = Math.min(W, H * 0.62);
     for (const k in cvs) {
       cvs[k].width = Math.round(W * DPR); cvs[k].height = Math.round(H * DPR);

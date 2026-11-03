@@ -42,12 +42,18 @@ const rand = (a, b) => a + Math.random() * (b - a);
 (() => {
   const suits = ["♠", "♥", "♣", "♦"];
   let html = "";
-  for (let r = 0; r < 4; r++) {
+  for (let r = 0; r < 3; r++) {
     html += `<span class="tk-chr">${CONFIG.cherokee}<small>${CONFIG.cherokeeLatin}</small></span>`;
     CONFIG.ticker.forEach((t, i) => { html += `<span class="tk-suit">${suits[(r + i) % 4]}</span><span class="tk-txt">${t}</span>`; });
     html += `<span class="tk-suit">${suits[r % 4]}</span>`;
   }
-  $(".ticker-track").innerHTML = html + html;
+  const track = $(".ticker-track");
+  track.innerHTML = html + html; // two identical halves → seamless loop
+  // same scrolling speed on every screen (~85px per second)
+  const pace = () => { track.style.animationDuration = (track.scrollWidth / 2 / 85).toFixed(1) + "s"; };
+  pace();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(pace);
+  addEventListener("resize", pace);
 })();
 
 /* ------------------------------------------------------------------ MUSIC: birthday video + Chicken Fried, mixed with Web Audio

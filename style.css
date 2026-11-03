@@ -99,19 +99,22 @@ body.photo-mode .pix-sub{color:var(--carolina-3)}
 #theatre{position:fixed;inset:0;z-index:1;overflow:hidden}
 .ticker{position:absolute;left:0;right:0;bottom:0;z-index:45;overflow:hidden;padding:9px 0 calc(9px + env(safe-area-inset-bottom));
   background:linear-gradient(90deg,#13294b,#1d3d6b 30%,#2b5a8f 50%,#1d3d6b 70%,#13294b);border-top:2px solid rgba(167,203,230,.9);
-  box-shadow:0 -6px 24px rgba(123,175,212,.45);animation:stripGlow 3s ease-in-out infinite}
-.ticker::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.18) 50%,transparent 70%) 0 0/50% 100% no-repeat;animation:sheen 4.5s ease-in-out infinite}
-@keyframes sheen{from{background-position:-60% 0}to{background-position:160% 0}}
-@keyframes stripGlow{50%{box-shadow:0 -6px 34px rgba(167,203,230,.75)}}
-.ticker-track{display:inline-flex;align-items:center;white-space:nowrap;animation:tick 40s linear infinite;
+  box-shadow:0 -6px 24px rgba(123,175,212,.45)}
+/* glow pulse + light sweep use only opacity/transform so the browser never has to repaint the strip */
+.ticker::before{content:"";position:absolute;left:0;right:0;top:-2px;height:2px;background:#e6f2fb;box-shadow:0 0 18px 4px rgba(167,203,230,.9);
+  opacity:.35;animation:stripGlow 3s ease-in-out infinite;pointer-events:none;will-change:opacity}
+.ticker::after{content:"";position:absolute;top:0;bottom:0;left:0;width:35%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.16),transparent);transform:translate3d(-100%,0,0);animation:sheen 5s ease-in-out infinite;will-change:transform}
+@keyframes sheen{from{transform:translate3d(-100%,0,0)}to{transform:translate3d(320%,0,0)}}
+@keyframes stripGlow{50%{opacity:1}}
+.ticker-track{display:inline-flex;align-items:center;white-space:nowrap;animation:tick 40s linear infinite;will-change:transform;backface-visibility:hidden;
   font-size:clamp(12px,3.4vw,15px);font-weight:800;letter-spacing:.12em;color:#fff}
 .tk-txt{padding:0 4px}
 .tk-suit{padding:0 14px;color:var(--carolina-2);font-size:1.15em}
 .tk-chr{display:inline-flex;align-items:baseline;gap:8px;margin:0 6px;padding:3px 12px;border-radius:999px;background:#fff;color:var(--navy);
   font-family:"Cherokee","Plantagenet Cherokee",sans-serif;font-size:1.25em;letter-spacing:.04em;box-shadow:0 0 14px rgba(167,203,230,.8)}
 .tk-chr small{font-family:"Inter",sans-serif;font-weight:600;font-style:italic;font-size:.62em;letter-spacing:.02em;color:var(--navy-2);text-transform:none}
-@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes tick{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
 
 .balloons i{position:absolute;bottom:-20vh;left:var(--x);width:clamp(28px,8.5vmin,50px);aspect-ratio:.82;border-radius:50% 50% 48% 48%/55% 55% 45% 45%;
   background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.8) 0 8%,transparent 22%),var(--c);
