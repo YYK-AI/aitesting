@@ -28,9 +28,9 @@ const CONFIG = {
   signoff: "Yusuf",
   // bottom strip, in the Eastern Band (Kituwah / North Carolina) form, as taught by Eastern Band elder
   // Robert Bushyhead in the WCU Cherokee lesson "Happy Birthday" (Lesson 6B):
-  // ᎤᎵᎮᎵᏍᏗ ᏣᏕᏘᏯ ᎩᎾᎵ = Ulihelisdi tsadetiya ginali = "Happy birthday to you, my friend"
-  cherokee: "ᎤᎵᎮᎵᏍᏗ ᏣᏕᏘᏯ ᎩᎾᎵ",
-  cherokeeLatin: "happy birthday, my friend",
+  // ᎤᎵᎮᎵᏍᏗ ᏣᏕᏘᏯ = Ulihelisdi tsadetiya = "Happy birthday to you"
+  cherokee: "ᎤᎵᎮᎵᏍᏗ ᏣᏕᏘᏯ",
+  cherokeeLatin: "happy birthday",
   ticker: ["HAPPY 21ST BIRTHDAY PAYTYN", "MAY THE ODDS BE EVER IN YOUR FAVOR"],
 };
 
