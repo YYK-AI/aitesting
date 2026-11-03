@@ -273,7 +273,7 @@ function buildShow() {
   tl.to("#startBtn", { scale: 0, opacity: 0, duration: 0.3, ease: "power2.in" }, 0.8);
   tl.call(() => { $("#tapText").textContent = "here we go…"; }, null, 0.05);
   tl.call(() => chipBurst(0.5, 0.78, 18, 50), null, 0.85);
-  tl.to([".intro-bottom", ".volume"], { opacity: 0, y: 30, duration: 0.5 }, 1.0);
+  tl.to([".intro-bottom", ".volume", "#watchBtn"], { opacity: 0, y: 30, duration: 0.5 }, 1.0);
   tl.set("#intro", { autoAlpha: 0 }, 1.6);
 
   // --- the title celebrates: the 21 chip drops in under her name
@@ -370,6 +370,14 @@ $("#soundPill").addEventListener("click", () => { Mix.resume(); $("#soundPill").
 $("#skip").addEventListener("click", () => { Mix.toZbb(); tl.seek("finale"); });
 
 $("#cake").addEventListener("click", blowCandles);
+
+// watch the whole thing as a pre-made video (backup if anything acts up)
+$("#watchBtn").addEventListener("click", () => {
+  Mix.vid.muted = true;
+  $("#movie").hidden = false;
+  const v = $("#movieVid"); v.currentTime = 0; v.play().catch(() => {});
+});
+$("#movieClose").addEventListener("click", () => { const v = $("#movieVid"); v.pause(); $("#movie").hidden = true; });
 
 $("#replay").addEventListener("click", () => {
   creditsShown = false; blown = false;

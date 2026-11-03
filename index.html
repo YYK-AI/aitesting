@@ -80,6 +80,7 @@
   <div class="end-btns">
     <button id="replay" aria-label="Replay">↻</button>
     <button id="wallBtn" aria-label="All the pics">📸</button>
+    <a id="dlBtn" class="dl" href="media/paytyn-birthday.mp4" download="Happy-Birthday-Paytyn.mp4">⬇ Save video</a>
   </div>
   <button id="soundPill">🔊 tap for music</button>
 </main>
@@ -92,6 +93,7 @@
       <p class="tap" id="tapText">tap the chip to start</p>
     </div>
     <p class="volume"><span class="spk">🔊<i></i><i></i></span> Turn your volume up</p>
+    <button id="watchBtn" class="watch">or ▶ watch it as a video</button>
   </div>
 </section>
 
@@ -102,6 +104,11 @@
   <div class="grid" id="wallGrid"></div>
 </div>
 <div id="lightbox" hidden><img alt=""><p></p></div>
+<div id="movie" hidden>
+  <button class="close" id="movieClose" aria-label="Close">✕</button>
+  <video id="movieVid" controls playsinline preload="none" poster="media/birthday-poster.jpg" src="media/paytyn-birthday.mp4"></video>
+  <a class="dl" href="media/paytyn-birthday.mp4" download="Happy-Birthday-Paytyn.mp4">⬇ Save video</a>
+</div>
 
 <!-- mockingjay pin, used in a couple of places -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
