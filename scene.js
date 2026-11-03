@@ -388,7 +388,7 @@ const Scene = (() => {
   }
 
   function resize() {
-    DPR = Math.min(2, window.devicePixelRatio || 1);
+    DPR = Math.min(1.5, window.devicePixelRatio || 1);
     W = innerWidth; H = innerHeight; S = Math.min(W, H * 0.62);
     for (const k in cvs) {
       cvs[k].width = Math.round(W * DPR); cvs[k].height = Math.round(H * DPR);
@@ -399,7 +399,7 @@ const Scene = (() => {
   }
   function loop(t) {
     raf = requestAnimationFrame(loop);
-    if (t - last < 33) return;
+    if (t - last < 40) return;
     last = t; frame(t);
   }
   let rt;

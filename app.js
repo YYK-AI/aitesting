@@ -7,8 +7,8 @@ const CONFIG = {
   bdayVideo: "media/birthday.mp4",
   // Zac Brown Band — Chicken Fried, layered under the birthday song from Chapter III on
   zbbSong: "media/chicken-fried.mp3",
-  zbbStart: 0, // Chicken Fried rises in from the top of the song
-  mix: { bday: 0.8, zbb: 0.95, fade: 5 }, // volumes (0–1) and blend length (s)
+  zbbStart: 50.8, // seconds into chicken-fried.mp3: "...grown in Southern ground, and a little bit of chicken fried"
+  mix: { bday: 0.8, bdayWithZbb: 0.1, zbb: 0.95, fade: 3.5 }, // volumes (0–1) and crossfade length (s)
   // the pics, in order — her solo ones are sprinkled between the ones together
   photos: [
     { src: "img/canyon.jpg",        sticker: "🏜️" },
@@ -29,7 +29,7 @@ const CONFIG = {
   // bottom strip. "ᎤᎵᎮᎵᏍᏗ ᏣᏕᏘᏯ" (ulihelisdi tsadetiya) = "happy birthday" in Cherokee syllabary
   cherokee: "ᎤᎵᎮᎵᏍᏗ ᏣᏕᏘᏯ",
   cherokeeLatin: "ulihelisdi tsadetiya",
-  ticker: ["HAPPY 21ST BIRTHDAY PAYTYN", "MAY THE ODDS BE EVER IN YOUR FAVOR", "ALL IN ON PAYTYN"],
+  ticker: ["HAPPY 21ST BIRTHDAY PAYTYN", "MAY THE ODDS BE EVER IN YOUR FAVOR"],
 };
 
 const $ = (s) => document.querySelector(s);
@@ -53,7 +53,7 @@ const rand = (a, b) => a + Math.random() * (b - a);
 const Mix = {
   vid: document.getElementById("bgvid"),
   song: new Audio(CONFIG.zbbSong),
-  ctx: null, onZbb: false, n: {},
+  ctx: null, gB: null, gZ: null, onZbb: false,
   init() {
     this.vid.src = CONFIG.bdayVideo;
     this.song.preload = "auto";
@@ -61,23 +61,17 @@ const Mix = {
     tryPlay();
     document.addEventListener("visibilitychange", () => { if (!document.hidden && this.vid.paused) tryPlay(); });
   },
-  // birthday song:  source → low-pass → dry gain → out, and low-pass → echo (delay + feedback) → wet gain → out
-  // Chicken Fried:  source → high-pass → gain → out
+  // called inside the first tap: sound on, birthday song from the top, Chicken Fried unlocked but silent
   start() {
     try {
-      const AC = window.AudioContext || window.webkitAudioContext, c = (this.ctx = new AC()), n = this.n;
-      n.sB = c.createMediaElementSource(this.vid); n.sZ = c.createMediaElementSource(this.song);
-      n.lp = c.createBiquadFilter(); n.lp.type = "lowpass"; n.lp.frequency.value = 20000; n.lp.Q.value = 0.8;
-      n.dry = c.createGain(); n.dry.gain.value = CONFIG.mix.bday;
-      n.delay = c.createDelay(2); n.delay.delayTime.value = 0.366; // a dotted-eighth echo at the song's ~123 bpm
-      n.fb = c.createGain(); n.fb.gain.value = 0.5;
-      n.wet = c.createGain(); n.wet.gain.value = 0;
-      n.hp = c.createBiquadFilter(); n.hp.type = "highpass"; n.hp.frequency.value = 20; n.hp.Q.value = 0.7;
-      n.gZ = c.createGain(); n.gZ.gain.value = 0;
-      n.sB.connect(n.lp); n.lp.connect(n.dry).connect(c.destination);
-      n.lp.connect(n.delay); n.delay.connect(n.fb).connect(n.delay); n.delay.connect(n.wet).connect(c.destination);
-      n.sZ.connect(n.hp).connect(n.gZ).connect(c.destination);
-      c.resume();
+      const AC = window.AudioContext || window.webkitAudioContext;
+      try { this.ctx = new AC({ latencyHint: "playback" }); } catch (e) { this.ctx = new AC(); }
+      const sB = this.ctx.createMediaElementSource(this.vid), sZ = this.ctx.createMediaElementSource(this.song);
+      this.gB = this.ctx.createGain(); this.gZ = this.ctx.createGain();
+      this.gB.gain.value = CONFIG.mix.bday; this.gZ.gain.value = 0;
+      sB.connect(this.gB).connect(this.ctx.destination);
+      sZ.connect(this.gZ).connect(this.ctx.destination);
+      this.ctx.resume();
     } catch (e) { this.ctx = null; this.vid.volume = CONFIG.mix.bday; }
     this.vid.muted = false; this.vid.loop = true;
     this.vid.currentTime = 0;
@@ -88,47 +82,27 @@ const Mix = {
       if (bad) $("#soundPill").style.display = "block";
     }, 2500);
   },
-  // smooth equal-power curve between two values
-  curve(param, from, to, t0, secs, down) {
-    const N = 64, v = new Float32Array(N);
-    for (let i = 0; i < N; i++) { const k = i / (N - 1); const e = down ? Math.cos(k * Math.PI / 2) : Math.sin(k * Math.PI / 2); v[i] = to + (from - to) * (down ? e : 1 - e); }
-    param.cancelScheduledValues(t0); param.setValueCurveAtTime(v, t0, secs);
+  fade(which, to, secs) {
+    if (this.ctx) {
+      const g = which === "bday" ? this.gB : this.gZ, now = this.ctx.currentTime;
+      g.gain.cancelScheduledValues(now); g.gain.setValueAtTime(g.gain.value, now); g.gain.linearRampToValueAtTime(to, now + secs);
+    } else {
+      gsap.to(which === "bday" ? this.vid : this.song, { volume: to, duration: secs });
+    }
   },
-  // the blend: the birthday song gets muffled, echoes out and gently slows,
-  // while Chicken Fried rises in from the top with its lows opening up
   toZbb() {
     if (this.onZbb) return;
     this.onZbb = true;
-    const F = CONFIG.mix.fade;
+    if (!this.ctx) this.song.volume = 0;
     this.song.currentTime = CONFIG.zbbStart;
     this.song.play().catch(() => {});
-    if (this.ctx) {
-      const c = this.ctx, n = this.n, t = c.currentTime;
-      n.lp.frequency.cancelScheduledValues(t); n.lp.frequency.setValueAtTime(20000, t); n.lp.frequency.exponentialRampToValueAtTime(450, t + F * 0.8);
-      n.wet.gain.cancelScheduledValues(t); n.wet.gain.setValueAtTime(0, t); n.wet.gain.linearRampToValueAtTime(0.45, t + F * 0.3);
-      n.wet.gain.linearRampToValueAtTime(0, t + F * 1.6);
-      n.fb.gain.setValueAtTime(0.5, t); n.fb.gain.linearRampToValueAtTime(0.25, t + F * 1.6);
-      this.curve(n.dry.gain, CONFIG.mix.bday, 0, t + F * 0.15, F * 0.85, true);
-      this.curve(n.gZ.gain, 0, CONFIG.mix.zbb, t, F, false);
-      n.hp.frequency.cancelScheduledValues(t); n.hp.frequency.setValueAtTime(1400, t); n.hp.frequency.exponentialRampToValueAtTime(20, t + F);
-    } else {
-      this.song.volume = 0;
-      gsap.to(this.song, { volume: CONFIG.mix.zbb, duration: F });
-      gsap.to(this.vid, { volume: 0, duration: F });
-    }
-    try { this.vid.preservesPitch = false; this.vid.webkitPreservesPitch = false; } catch (e) {}
-    gsap.to(this.vid, { playbackRate: 0.88, duration: F, ease: "sine.inOut" });
+    this.fade("zbb", CONFIG.mix.zbb, CONFIG.mix.fade);
+    this.fade("bday", CONFIG.mix.bdayWithZbb, CONFIG.mix.fade);
   },
   restart() {
     this.onZbb = false;
     this.song.pause(); this.song.currentTime = 0;
-    gsap.killTweensOf(this.vid); this.vid.playbackRate = 1;
-    if (this.ctx) {
-      const n = this.n, t = this.ctx.currentTime;
-      [n.lp.frequency, n.wet.gain, n.dry.gain, n.gZ.gain, n.hp.frequency, n.fb.gain].forEach((p) => p.cancelScheduledValues(t));
-      n.lp.frequency.setValueAtTime(20000, t); n.wet.gain.setValueAtTime(0, t); n.dry.gain.setValueAtTime(CONFIG.mix.bday, t);
-      n.gZ.gain.setValueAtTime(0, t); n.hp.frequency.setValueAtTime(20, t); n.fb.gain.setValueAtTime(0.5, t);
-    } else { this.vid.volume = CONFIG.mix.bday; }
+    this.fade("zbb", 0, 0.3); this.fade("bday", CONFIG.mix.bday, 0.3);
     this.vid.currentTime = 0; this.vid.play().catch(() => {});
   },
   resume() {
@@ -310,7 +284,7 @@ function buildShow() {
 
   // --- CHAPTER III: Zac Brown Band
   tl.addLabel("zbb", t);
-  tl.call(() => Mix.toZbb(), null, t - 4.2);
+  tl.call(() => Mix.toZbb(), null, t - 2.5);
   tl.to(".beam", { opacity: 1, duration: 0.8 }, t - 0.6);
   tl.to(".beam.b1", { rotation: 10, duration: 2.2, yoyo: true, repeat: 3, ease: "sine.inOut" }, t - 0.6);
   tl.to(".beam.b2", { rotation: -10, duration: 2.2, yoyo: true, repeat: 3, ease: "sine.inOut" }, t - 0.6);
