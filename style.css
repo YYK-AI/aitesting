@@ -4,6 +4,7 @@
 @font-face{font-family:"Inter";src:url(fonts/inter-latin-600-normal.woff2) format("woff2");font-weight:600;font-display:swap}
 @font-face{font-family:"Inter";src:url(fonts/inter-latin-800-normal.woff2) format("woff2");font-weight:800;font-display:swap}
 @font-face{font-family:"Caveat";src:url(fonts/caveat-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Dancing";src:url(fonts/dancing-script-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
 @font-face{font-family:"Rye";src:url(fonts/rye-latin-400-normal.woff2) format("woff2");font-display:swap}
 
 :root{
@@ -127,7 +128,7 @@ body.photo-mode .pix-sub{color:var(--carolina-3)}
 .hbi-big{font-family:"Playfair",serif;font-weight:700;font-size:clamp(46px,14.5vw,110px);line-height:1;color:#fff;margin-top:8px;
   text-shadow:0 6px 30px rgba(11,26,51,.6)}
 .hbi-word{display:inline-block}
-.hbi-name{font-family:"Caveat",cursive;font-weight:700;font-size:clamp(84px,28vw,190px);line-height:.95;color:var(--carolina-2);
+.hbi-name{font-family:"Dancing",cursive;font-weight:700;font-size:clamp(84px,27vw,190px);line-height:.95;color:var(--carolina-2);
   text-shadow:0 0 30px rgba(123,175,212,.9),0 5px 0 var(--navy)}
 .hbi-name .l{display:inline-block}
 #hbiChip{--s:clamp(62px,17vw,100px);margin-top:2px}
@@ -168,11 +169,11 @@ body.photo-mode .pix-sub{color:var(--carolina-3)}
 
 /* finale */
 #finale{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:clamp(4px,1.3vh,12px);padding:max(76px,11vh) 16px max(60px,9vh);opacity:0;visibility:hidden;text-align:center;
+  gap:clamp(6px,1.6vh,14px);padding:max(70px,10vh) 20px max(56px,8vh);opacity:0;visibility:hidden;text-align:center;
   background:radial-gradient(70% 55% at 50% 45%,rgba(11,26,51,.6),rgba(11,26,51,.25) 70%,transparent)}
 .hb{line-height:1}
-.hb-1{font-family:"Playfair",serif;font-weight:700;font-size:clamp(36px,11vw,76px);color:#fff;text-shadow:0 4px 24px rgba(11,26,51,.6)}
-.hb-name{font-family:"Caveat",cursive;font-weight:700;font-size:clamp(76px,25vw,160px);color:var(--carolina-2);line-height:.95;
+.hb-1{font-family:"Playfair",serif;font-weight:700;font-style:italic;letter-spacing:.01em;font-size:clamp(36px,11vw,76px);color:#fff;text-shadow:0 4px 24px rgba(11,26,51,.6)}
+.hb-name{font-family:"Dancing",cursive;font-weight:700;font-size:clamp(78px,25vw,160px);color:var(--carolina-2);line-height:.95;
   text-shadow:0 0 26px rgba(123,175,212,.85),0 4px 0 var(--navy)}
 .hb-name .l{display:inline-block}
 #cake{position:relative;width:clamp(150px,44vw,220px);height:clamp(125px,36vw,180px);margin-top:clamp(26px,5vh,44px)}
@@ -186,6 +187,8 @@ body.photo-mode .pix-sub{color:var(--carolina-3)}
 .candle{position:relative;width:clamp(7px,2vw,10px);height:clamp(30px,9vw,44px);border-radius:3px;
   background:repeating-linear-gradient(-45deg,#fff 0 4px,var(--carolina) 4px 8px);box-shadow:inset -2px 0 0 rgba(0,0,0,.12)}
 .candle:nth-child(odd){height:clamp(34px,10vw,50px)}
+.candle.num{width:auto;height:auto;background:none;box-shadow:none;font-family:"Playfair",serif;font-weight:700;font-size:clamp(40px,11vw,56px);line-height:1}
+.candle.num span{display:block;color:#fff;-webkit-text-stroke:2px var(--carolina);text-shadow:0 3px 0 rgba(0,0,0,.2)}
 .flame{position:absolute;left:50%;bottom:100%;width:14px;height:24px;margin-left:-7px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
   background:radial-gradient(circle at 50% 70%,#fff 0 18%,#ffd36b 35%,#ff8a1a 70%);box-shadow:0 0 18px 6px rgba(255,190,90,.55);
   animation:flick .18s ease-in-out infinite alternate;transform-origin:50% 100%}
@@ -194,15 +197,15 @@ body.photo-mode .pix-sub{color:var(--carolina-3)}
 .candle.out .flame{animation:none;opacity:0;transform:scale(.2) translateY(-6px);transition:.3s}
 .smoke{position:absolute;left:50%;bottom:100%;width:12px;height:18px;margin-left:-6px;border-radius:50%;pointer-events:none;
   background:radial-gradient(closest-side,rgba(225,230,240,.85),rgba(225,230,240,0))}
-#message{font-family:"Playfair",serif;font-weight:700;font-size:clamp(18px,5.2vw,26px);line-height:1.35;color:#fff;opacity:0;max-width:22ch;margin-top:6px;
+#message{font-family:"Playfair",serif;font-style:italic;font-weight:700;font-size:clamp(22px,6.4vw,32px);line-height:1.25;color:#fff;opacity:0;max-width:16ch;margin-top:14px;
   text-shadow:0 2px 18px rgba(11,26,51,.7)}
-#credits{font-weight:600;font-size:clamp(14px,4vw,18px);line-height:1.35;color:var(--carolina-3);opacity:0;max-width:26ch;
-  text-shadow:0 2px 16px rgba(11,26,51,.6)}
+#credits{font-weight:400;font-size:clamp(14px,3.9vw,17px);line-height:1.4;color:var(--carolina-3);opacity:0;max-width:26ch;letter-spacing:.01em}
 #credits span{display:inline-block}
-#signoff{display:flex;align-items:center;gap:8px;font-family:"Caveat",cursive;font-weight:700;font-size:clamp(24px,7vw,34px);color:#fff;opacity:0}
-.end-btns{display:flex;gap:10px;opacity:0;pointer-events:none;margin-top:4px}
-.end-btns button{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);padding:10px 16px;border-radius:999px;font-size:15px;font-weight:600;
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#signoff{font-family:"Dancing",cursive;font-weight:700;font-size:clamp(34px,10vw,52px);color:#fff;opacity:0;line-height:1;margin-top:4px;
+  text-shadow:0 0 18px rgba(123,175,212,.7)}
+.end-btns{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;z-index:60;display:flex;gap:8px;opacity:0;pointer-events:none}
+.end-btns button{width:42px;height:42px;border-radius:50%;font-size:19px;display:grid;place-items:center;
+  background:rgba(11,26,51,.45);border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 
 #skip{position:absolute;right:14px;bottom:calc(max(8px,env(safe-area-inset-bottom)) + 40px);z-index:60;font-size:13px;font-weight:600;
   background:rgba(11,26,51,.55);border:1px solid rgba(255,255,255,.3);padding:7px 12px;border-radius:999px;opacity:0;pointer-events:none}
@@ -248,10 +251,10 @@ body.photo-mode .pix-sub{color:var(--carolina-3)}
   .hb{grid-column:1;grid-row:1 / span 7}
   .hb-1{font-size:clamp(30px,9vh,80px)}
   .hb-name{font-size:clamp(60px,22vh,170px)}
-  #cake,#message,#credits,#signoff,.end-btns{grid-column:2}
+  #cake,#message,#credits,#signoff{grid-column:2}
   #cake{width:min(30vh,220px);height:min(25vh,180px);margin-top:13vh}
   .batsignal{right:auto;left:12%;top:8%;width:30vmin}
-  #credits{font-size:clamp(13px,3.4vh,20px)}
+  #credits{font-weight:400;font-size:clamp(14px,3.9vw,17px);line-height:1.4;color:var(--carolina-3);opacity:0;max-width:26ch;letter-spacing:.01em}
 }
 @media (orientation:landscape) and (max-height:500px){
   .eyebrow{display:none}
@@ -259,5 +262,6 @@ body.photo-mode .pix-sub{color:var(--carolina-3)}
   .candle{position:relative;width:clamp(7px,2vw,10px);height:clamp(30px,9vw,44px);border-radius:3px;
   background:repeating-linear-gradient(-45deg,#fff 0 4px,var(--carolina) 4px 8px);box-shadow:inset -2px 0 0 rgba(0,0,0,.12)}
 .candle:nth-child(odd){height:clamp(34px,10vw,50px)}
-  .end-btns button{padding:5px 12px;font-size:3.4vh}
+.candle.num{width:auto;height:auto;background:none;box-shadow:none;font-family:"Playfair",serif;font-weight:700;font-size:clamp(40px,11vw,56px);line-height:1}
+.candle.num span{display:block;color:#fff;-webkit-text-stroke:2px var(--carolina);text-shadow:0 3px 0 rgba(0,0,0,.2)}
 }

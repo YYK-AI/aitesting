@@ -1,5 +1,5 @@
 /* =========================================================================
-   The Paytyn Show — a tiny birthday "movie" for Paytyn
+   The Paytyn Show — a tiny birthday "movie" for Paytyn's 21st
    Edit the CONFIG block to change songs, start times or captions.
    ========================================================================= */
 const CONFIG = {
@@ -27,10 +27,10 @@ const CONFIG = {
   concertPhotos: ["img/stameys.jpg", "img/zbb-concert.jpg"],
   // Real Cherokee nature photos for the backdrop (optional; empty = the illustrated scene)
   naturePhotos: [],
-  message: "Hope you have an AWESOME year ahead! Still crazy how we ended up meeting, and I'm so grateful we did.",
-  creditsLine: "And yes, this is where all my AI credits go 😂😂",
-  signoff: "— Yusuf 💙",
-  tickerText: "HAPPY BIRTHDAY PAYTYN  ★  LIVE FROM CHEROKEE, N.C.  ★  MAY THE ODDS BE EVER IN YOUR FAVOR  ★  ALL IN ON PAYTYN ♠  ★  ",
+  message: "Hope you have an AWESOME year ahead!",
+  creditsLine: "And yes, this is where all my AI credits go 😂",
+  signoff: "Yusuf",
+  tickerText: "HAPPY 21ST BIRTHDAY PAYTYN  ★  LIVE FROM CHEROKEE, N.C.  ★  MAY THE ODDS BE EVER IN YOUR FAVOR  ★  ALL IN ON PAYTYN ♠  ★  ",
 };
 
 const $ = (s) => document.querySelector(s);
