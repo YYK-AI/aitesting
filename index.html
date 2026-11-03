@@ -32,6 +32,7 @@
 
 <!-- ============ THEATRE ============ -->
 <main id="theatre" aria-label="The Paytyn Show">
+  <div id="dim"></div>
   <div class="balloons" aria-hidden="true">
     <i style="--x:8%;--d:13s;--c:#7bafd4"></i><i style="--x:22%;--d:16s;--c:#ffffff"></i>
     <i style="--x:78%;--d:14s;--c:#13294b"></i><i style="--x:90%;--d:17s;--c:#a7cbe6"></i>
@@ -44,11 +45,19 @@
     <div class="screen-fallback"><span>🎂</span><b>Happy Birthday</b><b>Paytyn</b></div>
     <div id="ytbox"><div id="yt"></div></div>
   </div>
-  <div id="nowshowing">NOW SHOWING<br><b>Happy Birthday, Paytyn</b></div>
+  <div id="hbIntro">
+    <p class="hbi-eyebrow">live from Cherokee, N.C.</p>
+    <h2 class="hbi-big"><span class="hbi-word">Happy</span> <span class="hbi-word">Birthday</span></h2>
+    <div class="hbi-name">Paytyn</div>
+    <div id="hbiChip" class="chip" style="--c:#13294b;--c2:#7bafd4"><span class="chip-face">20</span></div>
+  </div>
 
   <div id="photos"></div>
 
-  <div id="actcard"><small id="actnum">ACT I</small><b id="acttitle">The Wild Side</b></div>
+  <div id="actcard">
+    <div id="actchip" class="chip" style="--c:#13294b;--c2:#7bafd4"><span class="chip-face">♠</span></div>
+    <small id="actnum">CHAPTER I</small><b id="acttitle">The Wild Side</b>
+  </div>
 
   <div id="concert">
     <div class="ticket">
@@ -87,18 +96,7 @@
     </div>
   </div>
 
-  <div id="frame">
-    <div class="proscenium"></div>
-    <div class="curtain left"></div>
-    <div class="curtain right"></div>
-    <div class="valance"></div>
-    <div class="marquee" id="marquee">
-      <span>The Paytyn Show</span>
-      <small>LIVE AT THE MOUNTAINSIDE THEATRE · CHEROKEE, N.C.</small>
-    </div>
-    <div class="floor"></div>
-    <div class="ticker"><div class="ticker-track"></div></div>
-  </div>
+  <div class="ticker" id="ticker"><div class="ticker-track"></div></div>
 
   <button id="skip" aria-label="Skip to the end">skip ⏭</button>
   <button id="soundPill">🔊 tap for music</button>
